@@ -49,39 +49,39 @@ export default function DashboardLayout({ children, title }: DashboardLayoutProp
   }
 
   return (
-    <div className="min-h-screen flex bg-[#f4f5f9] font-sans">
+    <div className="h-screen w-full overflow-hidden flex bg-[#f4f5f9] font-sans">
       {/* Sidebar */}
       <aside 
-        className={`relative bg-white border-r border-gray-200 flex flex-col py-6 shadow-sm z-10 shrink-0 transition-all duration-300 ease-in-out ${
-          isSidebarOpen ? 'w-64 px-4' : 'w-20 items-center'
+        className={`relative bg-white border-r border-gray-200 flex flex-col py-4 shadow-sm z-10 shrink-0 transition-all duration-300 ease-in-out ${
+          isSidebarOpen ? 'w-60 px-4' : 'w-16 items-center'
         }`}
       >
         {/* Toggle Button */}
         <button 
           onClick={toggleSidebar}
-          className="absolute -right-3 top-9 bg-white border border-gray-200 text-gray-500 rounded-full p-1 shadow-sm hover:text-gray-800 hover:bg-gray-50 z-20 transition-transform"
+          className="absolute -right-3 top-6 bg-white border border-gray-200 text-gray-500 rounded-full p-1 shadow-sm hover:text-gray-800 hover:bg-gray-50 z-20 transition-transform"
         >
           {isSidebarOpen ? <ChevronLeft size={14} strokeWidth={3} /> : <ChevronRight size={14} strokeWidth={3} />}
         </button>
 
         {/* Top: Avatar */}
-        <div className={`flex items-center gap-3 mb-10 cursor-pointer ${isSidebarOpen ? 'px-2' : ''}`}>
+        <div className={`flex items-center gap-3 mb-6 cursor-pointer ${isSidebarOpen ? 'px-1' : ''}`}>
           <div className="relative shrink-0">
-            <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden shadow-sm">
+            <div className="w-9 h-9 rounded-full bg-gray-200 overflow-hidden shadow-sm">
               <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Aryo" alt="Avatar" className="w-full h-full object-cover" />
             </div>
-            <div className="absolute top-0 right-0 w-3 h-3 bg-[#1bc48d] border-2 border-white rounded-full"></div>
+            <div className="absolute top-0 right-0 w-2.5 h-2.5 bg-[#1bc48d] border-2 border-white rounded-full"></div>
           </div>
           {isSidebarOpen && (
             <div className="flex flex-col overflow-hidden whitespace-nowrap ">
-              <span className="text-sm font-bold text-gray-800 truncate">Aryo</span>
-              <span className="text-xs font-medium text-gray-400 truncate">Administrator</span>
+              <span className="text-[13px] font-bold text-gray-800 truncate">Aryo</span>
+              <span className="text-[11px] font-medium text-gray-400 truncate">Administrator</span>
             </div>
           )}
         </div>
 
         {/* Middle: Navigation Icons */}
-        <nav className={`flex flex-col flex-1 w-full ${isSidebarOpen ? 'gap-2' : 'gap-5 items-center'}`}>
+        <nav className={`flex flex-col flex-1 w-full ${isSidebarOpen ? 'gap-1' : 'gap-3 items-center'}`}>
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
             const Icon = item.icon;
@@ -91,19 +91,19 @@ export default function DashboardLayout({ children, title }: DashboardLayoutProp
                 key={item.path} 
                 to={item.path} 
                 title={!isSidebarOpen ? item.label : undefined}
-                className={`flex items-center gap-4 transition-colors ${
+                className={`flex items-center gap-3 transition-colors ${
                   isSidebarOpen 
-                    ? 'px-3 py-3 rounded-lg w-full' 
-                    : 'justify-center w-12 h-12 rounded-lg'
+                    ? 'px-3 py-2.5 rounded-lg w-full' 
+                    : 'justify-center w-10 h-10 rounded-lg'
                 } ${
                   isActive 
                     ? "bg-[#4871f7] text-white shadow-md transition-transform hover:scale-105"
                     : "text-gray-400 hover:text-gray-600 hover:bg-gray-50"
                 }`}
               >
-                <Icon size={24} strokeWidth={isActive ? 2.5 : 2} className="shrink-0" />
+                <Icon size={20} strokeWidth={isActive ? 2.5 : 2} className="shrink-0" />
                 {isSidebarOpen && (
-                  <span className={`font-semibold whitespace-nowrap  ${isActive ? 'text-white' : 'text-gray-600'}`}>
+                  <span className={`text-[13px] font-semibold whitespace-nowrap  ${isActive ? 'text-white' : 'text-gray-600'}`}>
                     {item.label}
                   </span>
                 )}
@@ -113,23 +113,23 @@ export default function DashboardLayout({ children, title }: DashboardLayoutProp
         </nav>
 
         {/* Bottom: Logout and Plus Button */}
-        <div className={`mt-auto pt-6 flex flex-col gap-4 ${isSidebarOpen ? 'w-full' : 'items-center'}`}>
+        <div className={`mt-auto pt-4 flex flex-col gap-3 ${isSidebarOpen ? 'w-full' : 'items-center'}`}>
           <button 
             onClick={handleLogout}
             title={!isSidebarOpen ? "Logout" : undefined}
-            className={`flex items-center gap-4 rounded-lg bg-red-50 hover:bg-red-100 text-red-500 shadow-sm transition-transform hover:scale-105 ${
-              isSidebarOpen ? 'px-4 py-3 w-full' : 'w-10 h-10 justify-center rounded-full'
+            className={`flex items-center gap-3 rounded-lg bg-red-50 hover:bg-red-100 text-red-500 shadow-sm transition-transform hover:scale-105 ${
+              isSidebarOpen ? 'px-3 py-2.5 w-full justify-center' : 'w-9 h-9 justify-center rounded-full'
             }`}
           >
-            <LogOut size={18} strokeWidth={2.5} className="shrink-0" />
-            {isSidebarOpen && <span className="font-semibold whitespace-nowrap ">Logout</span>}
+            <LogOut size={16} strokeWidth={2.5} className="shrink-0" />
+            {isSidebarOpen && <span className="text-[13px] font-semibold whitespace-nowrap ">Logout</span>}
           </button>
 
-          <button className={`flex items-center gap-3 bg-[#1bc48d] hover:bg-[#15a878] text-white shadow-sm transition-transform hover:scale-105 ${
-            isSidebarOpen ? 'px-4 py-3 rounded-lg w-full justify-center' : 'w-10 h-10 justify-center rounded-full'
+          <button className={`flex items-center gap-2 bg-[#1bc48d] hover:bg-[#15a878] text-white shadow-sm transition-transform hover:scale-105 ${
+            isSidebarOpen ? 'px-3 py-2.5 rounded-lg w-full justify-center' : 'w-9 h-9 justify-center rounded-full'
           }`}>
-            <Plus size={20} strokeWidth={3} className="shrink-0" />
-            {isSidebarOpen && <span className="font-semibold whitespace-nowrap ">Tambah Data</span>}
+            <Plus size={18} strokeWidth={3} className="shrink-0" />
+            {isSidebarOpen && <span className="text-[13px] font-semibold whitespace-nowrap ">import Data</span>}
           </button>
         </div>
       </aside>

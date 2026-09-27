@@ -1,4 +1,5 @@
 import axios from 'axios'
+import type { BackendResponse, MasterInstansi as BInstansi, MasterPIC as BPIC, MasterProduk as BProduk, MasterWilayah as BWilayah, MasterEkspedisi as BEkspedisi } from '@/types/backend';
 
 export interface MasterInstansi {
   id: string;
@@ -32,13 +33,12 @@ export interface MasterEkspedisi {
 
 export interface MasterWilayah {
   id: string;
-  namaWilayah: string; // Keep for backwards compatibility
+  namaWilayah: string;
+
   provinsi: string;
   kotaKab: string;
   alamat: string;
 }
-
-
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem('token')
@@ -46,11 +46,10 @@ const getAuthHeaders = () => {
 }
 
 export const masterApi = {
-  // Instansi (Backend)
   getInstansi: async (): Promise<MasterInstansi[]> => {
-    const res = await axios.get('/api/instansi', { headers: getAuthHeaders() });
-    const data = res.data.data || res.data || [];
-    return data.map((d: Record<string, unknown>) => ({
+    const res = await axios.get<BackendResponse<BInstansi[]>>('/api/instansi', { headers: getAuthHeaders() });
+    const data = res.data.data || [];
+    return data.map((d: BInstansi) => ({
       id: String(d.id),
       namaInstansi: (d.nama_instansi as string) || '',
       nik: (d.nik as string) || '',
@@ -88,11 +87,10 @@ export const masterApi = {
     await axios.delete(`/api/instansi/${id}`, { headers: getAuthHeaders() });
   },
 
-  // PIC (Backend)
   getPIC: async (): Promise<MasterPIC[]> => {
-    const res = await axios.get('/api/pic', { headers: getAuthHeaders() });
-    const data = res.data.data || res.data || [];
-    return data.map((d: Record<string, unknown>) => ({
+    const res = await axios.get<BackendResponse<BPIC[]>>('/api/pic', { headers: getAuthHeaders() });
+    const data = res.data.data || [];
+    return data.map((d: BPIC) => ({
       id: String(d.id),
       instansiId: String(d.instansi_id),
       namaPIC: (d.nama_pic as string) || '',
@@ -127,11 +125,10 @@ export const masterApi = {
     await axios.delete(`/api/pic/${id}`, { headers: getAuthHeaders() });
   },
 
-  // Produk (Backend)
   getProduk: async (): Promise<MasterProduk[]> => {
-    const res = await axios.get('/api/produk', { headers: getAuthHeaders() });
-    const data = res.data.data || res.data || [];
-    return data.map((d: Record<string, unknown>) => ({
+    const res = await axios.get<BackendResponse<BProduk[]>>('/api/produk', { headers: getAuthHeaders() });
+    const data = res.data.data || [];
+    return data.map((d: BProduk) => ({
       id: String(d.id),
       namaProduk: (d.nama_produk as string) || '',
       kategori: (d.jenis_produk as string) || ''
@@ -163,11 +160,10 @@ export const masterApi = {
     await axios.delete(`/api/produk/${id}`, { headers: getAuthHeaders() });
   },
 
-  // Ekspedisi (Backend)
   getEkspedisi: async (): Promise<MasterEkspedisi[]> => {
-    const res = await axios.get('/api/ekspedisi', { headers: getAuthHeaders() });
-    const data = res.data.data || res.data || [];
-    return data.map((d: Record<string, unknown>) => ({
+    const res = await axios.get<BackendResponse<BEkspedisi[]>>('/api/ekspedisi', { headers: getAuthHeaders() });
+    const data = res.data.data || [];
+    return data.map((d: BEkspedisi) => ({
       id: String(d.id),
       namaEkspedisi: (d.nama_ekspedisi as string) || ''
     }));
@@ -192,13 +188,13 @@ export const masterApi = {
     await axios.delete(`/api/ekspedisi/${id}`, { headers: getAuthHeaders() });
   },
 
-  // Wilayah (Backend)
   getWilayah: async (): Promise<MasterWilayah[]> => {
-    const res = await axios.get('/api/wilayah', { headers: getAuthHeaders() });
-    const data = res.data.data || res.data || [];
-    return data.map((d: Record<string, unknown>) => ({
+    const res = await axios.get<BackendResponse<BWilayah[]>>('/api/wilayah', { headers: getAuthHeaders() });
+    const data = res.data.data || [];
+    return data.map((d: BWilayah) => ({
       id: String(d.id),
-      namaWilayah: (d.provinsi as string) || '', // To maintain backwards compatibility if used elsewhere
+      namaWilayah: (d.provinsi as string) || '',
+
       provinsi: (d.provinsi as string) || '',
       kotaKab: (d.kota_kab as string) || '',
       alamat: (d.alamat as string) || ''

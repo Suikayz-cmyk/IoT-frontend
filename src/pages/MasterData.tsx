@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import { Trash2, Plus, Edit2, X } from 'lucide-react'
-import { masterApi } from '@/api/dummyMasterData'
+import { masterApi } from '@/api/masterApi'
 
 type TabType = 'instansi' | 'pic' | 'produk' | 'ekspedisi' | 'wilayah'
 
@@ -136,7 +136,7 @@ export default function MasterData() {
   return (
     <DashboardLayout title="Master Data">
       <div className="space-y-6">
-        {/* Tabs */}
+        
         <div className="flex border-b border-gray-200 overflow-x-auto">
           {tabs.map(tab => (
             <button
@@ -154,7 +154,6 @@ export default function MasterData() {
           ))}
         </div>
 
-        {/* Table List (Full Width) */}
         <div className="bg-white border border-gray-200 rounded-lg overflow-hidden flex flex-col">
           <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50/50">
             <h2 className="text-base font-semibold text-gray-800">Daftar {tabs.find(t => t.id === activeTab)?.label}</h2>
@@ -176,8 +175,7 @@ export default function MasterData() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                
-                {/* INSTANSI DATA */}
+
                 {activeTab === 'instansi' && instansiList.length === 0 && <tr><td colSpan={8} className="text-center py-8">Belum ada data</td></tr>}
                 {activeTab === 'instansi' && instansiList.map((item, idx) => (
                   <tr key={item.id} className="hover:bg-gray-50">
@@ -195,7 +193,6 @@ export default function MasterData() {
                   </tr>
                 ))}
 
-                {/* PIC DATA */}
                 {activeTab === 'pic' && picList.length === 0 && <tr><td colSpan={7} className="text-center py-8">Belum ada data</td></tr>}
                 {activeTab === 'pic' && picList.map((item, idx) => (
                   <tr key={item.id} className="hover:bg-gray-50">
@@ -212,7 +209,6 @@ export default function MasterData() {
                   </tr>
                 ))}
 
-                {/* PRODUK DATA */}
                 {activeTab === 'produk' && produkList.length === 0 && <tr><td colSpan={4} className="text-center py-8">Belum ada data</td></tr>}
                 {activeTab === 'produk' && produkList.map((item, idx) => (
                   <tr key={item.id} className="hover:bg-gray-50">
@@ -228,7 +224,6 @@ export default function MasterData() {
                   </tr>
                 ))}
 
-                {/* EKSPEDISI DATA */}
                 {activeTab === 'ekspedisi' && ekspedisiList.length === 0 && <tr><td colSpan={3} className="text-center py-8">Belum ada data</td></tr>}
                 {activeTab === 'ekspedisi' && ekspedisiList.map((item, idx) => (
                   <tr key={item.id} className="hover:bg-gray-50">
@@ -241,7 +236,6 @@ export default function MasterData() {
                   </tr>
                 ))}
 
-                {/* WILAYAH DATA */}
                 {activeTab === 'wilayah' && wilayahList.length === 0 && <tr><td colSpan={5} className="text-center py-8">Belum ada data</td></tr>}
                 {activeTab === 'wilayah' && wilayahList.map((item, idx) => (
                   <tr key={item.id} className="hover:bg-gray-50">
@@ -261,7 +255,6 @@ export default function MasterData() {
         </div>
       </div>
 
-      {/* MODAL FORM */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
@@ -276,8 +269,7 @@ export default function MasterData() {
             
             <div className="p-6">
               <form onSubmit={handleSubmit} className="space-y-4">
-                
-                {/* Instansi Form Fields */}
+
                 {activeTab === 'instansi' && (
                   <>
                     <input required placeholder="Nama Instansi" value={namaInstansi} onChange={e => setNamaInstansi(e.target.value)} className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-[#0f766e] outline-none" />
@@ -289,7 +281,6 @@ export default function MasterData() {
                   </>
                 )}
 
-                {/* PIC Form Fields */}
                 {activeTab === 'pic' && (
                   <>
                     <select required value={instansiId} onChange={e => setInstansiId(e.target.value)} className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-[#0f766e] outline-none bg-white">
@@ -303,7 +294,6 @@ export default function MasterData() {
                   </>
                 )}
 
-                {/* Produk Form Fields */}
                 {activeTab === 'produk' && (
                   <>
                     <input required placeholder="Nama Produk" value={namaProduk} onChange={e => setNamaProduk(e.target.value)} className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-[#0f766e] outline-none" />
@@ -317,12 +307,10 @@ export default function MasterData() {
                   </>
                 )}
 
-                {/* Ekspedisi Form Fields */}
                 {activeTab === 'ekspedisi' && (
                   <input required placeholder="Nama Ekspedisi" value={namaEkspedisi} onChange={e => setNamaEkspedisi(e.target.value)} className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-[#0f766e] outline-none" />
                 )}
 
-                {/* Wilayah Form Fields */}
                 {activeTab === 'wilayah' && (
                   <>
                     <input required placeholder="Provinsi" value={provinsi} onChange={e => setProvinsi(e.target.value)} className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-[#0f766e] outline-none" />

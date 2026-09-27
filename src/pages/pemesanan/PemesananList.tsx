@@ -4,7 +4,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout'
 import { Plus, Search, Eye } from 'lucide-react'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { pemesananApi } from '@/api/pemesanan'
-import { Badge } from '@/components/ui/badge'
+import { formatDate } from '@/utils/formatters'
 
 export default function PemesananList() {
   const navigate = useNavigate()
@@ -13,6 +13,12 @@ export default function PemesananList() {
   const { data: pemesananList, isLoading, refetch } = useQuery({
     queryKey: ['pemesanan'],
     queryFn: pemesananApi.getAll
+  })
+
+  const updateMut = useMutation({
+    mutationFn: ({ id, payload }: { id: string, payload: Record<string, string> }) => pemesananApi.update(id, payload),
+    onSuccess: () => refetch(),
+    onError: (err: Error) => alert('Gagal update status: ' + err.message)
   })
 
   const deleteMut = useMutation({
@@ -40,8 +46,7 @@ export default function PemesananList() {
       onExport={() => alert('Fitur Export dalam pengembangan')}
     >
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        
-        {/* Toolbar */}
+
         <div className="p-5 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="relative max-w-md w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
@@ -63,36 +68,35 @@ export default function PemesananList() {
           </button>
         </div>
 
-        {/* Table List */}
         <div className="overflow-x-auto min-h-100">
           <table className="w-full text-left border-collapse min-w-200">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-200 text-sm text-gray-500">
                 <th className="py-3 px-5 font-medium whitespace-nowrap">Kode Pemesanan</th>
+                  <th className="py-3 px-5 font-medium whitespace-nowrap">Tanggal PO</th>
                 <th className="py-3 px-5 font-medium">Instansi</th>
                 <th className="py-3 px-5 font-medium">Produk & Qty</th>
-                <th className="py-3 px-5 font-medium">Total Harga</th>
-                <th className="py-3 px-5 font-medium">Status Pesanan</th>
+                                <th className="py-3 px-5 font-medium">Status Pesanan</th>
                 <th className="py-3 px-5 font-medium">Status Odoo</th>
+                  <th className="py-3 px-5 font-medium whitespace-nowrap">Dibuat Pada</th>
+                  <th className="py-3 px-5 font-medium whitespace-nowrap">Terakhir Update</th>
                 <th className="py-3 px-5 font-medium text-center">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 text-sm text-gray-700">
               {isLoading ? (
                 <tr>
-                  <td colSpan={7} className="py-8 text-center text-gray-500">Memuat data...</td>
+                  <td colSpan={9} className="py-8 text-center text-gray-500">Memuat data...</td>
                 </tr>
               ) : filteredData.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-8 text-center text-gray-500">Tidak ada data pemesanan.</td>
+                  <td colSpan={9} className="py-8 text-center text-gray-500">Tidak ada data pemesanan.</td>
                 </tr>
               ) : (
                 filteredData.map((item) => (
                   <tr key={item.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="py-3 px-5 font-medium text-gray-900">
-                      <div>{item.kodePemesanan}</div>
-                      <div className="text-xs text-gray-500">{item.tanggalPesananPO || '-'}</div>
-                    </td>
+                    <td className="py-3 px-5 font-medium text-gray-900">{item.kodePemesanan}</td>
+                      <td className="py-3 px-5">{formatDate(item.tanggalPesananPO)}</td>
                     <td className="py-3 px-5">{item.namaInstansi}</td>
                     <td className="py-3 px-5">
                       <div className="flex flex-col">
@@ -100,20 +104,37 @@ export default function PemesananList() {
                         <span className="text-xs text-gray-500">Qty: {item.quantity || 1}</span>
                       </div>
                     </td>
-                    <td className="py-3 px-5 font-medium">
-                      {item.totalHargaJual || item.hargaPPN || '-'}
+                    
+                    <td className="py-3 px-5">
+                      <select 
+                        value={item.statusPesanan || ''} 
+                        onChange={(e) => updateMut.mutate({ id: item.id, payload: { statusPesanan: e.target.value } })}
+                        className={`text-sm font-medium border rounded px-2 py-1 outline-none ${item.statusPesanan === 'LUNAS' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-orange-50 text-orange-700 border-orange-200'}`}
+                      >
+                        <option value="">Pilih Status</option>
+                        <option value="Sudah Pembayaran">Sudah Pembayaran</option>
+                        <option value="Belum Pembayaran">Belum Pembayaran</option>
+                        <option value="Proses">Proses</option>
+                        <option value="Selesai">Selesai</option>
+                        <option value="LUNAS">LUNAS</option>
+                      </select>
                     </td>
                     <td className="py-3 px-5">
-                      <Badge variant="outline" className={`font-medium ${item.statusPesanan === 'LUNAS' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-orange-50 text-orange-700 border-orange-200'}`}>
-                        {item.statusPesanan || 'Diproses'}
-                      </Badge>
+                      <select 
+                        value={item.statusOdoo || ''} 
+                        onChange={(e) => updateMut.mutate({ id: item.id, payload: { statusOdoo: e.target.value } })}
+                        className="text-sm border rounded px-2 py-1 outline-none bg-gray-50 text-gray-700 border-gray-300"
+                      >
+                        <option value="">Pilih Status</option>
+                        <option value="Sudah Ada">Sudah Ada</option>
+                        <option value="Belum Ada">Belum Ada</option>
+                        <option value="Draft">Draft</option>
+                        <option value="Done">Done</option>
+                      </select>
                     </td>
-                    <td className="py-3 px-5">
-                      <Badge variant="outline" className="bg-gray-100 text-gray-600">
-                        {item.statusOdoo || '-'}
-                      </Badge>
-                    </td>
-                    <td className="py-3 px-5 text-center flex items-center justify-center gap-1">
+                    <td className="py-3 px-5">{formatDate(item.createdAt)}</td>
+                      <td className="py-3 px-5">{formatDate(item.updatedAt)}</td>
+                      <td className="py-3 px-5 text-center flex items-center justify-center gap-1">
                       <button 
                         onClick={() => navigate(`/pemesanan/${item.id}`)}
                         className="text-blue-600 hover:bg-blue-50 p-1.5 rounded transition-colors"

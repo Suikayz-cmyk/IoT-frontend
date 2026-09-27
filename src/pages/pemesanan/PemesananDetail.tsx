@@ -59,14 +59,12 @@ export default function PemesananDetail() {
       </div>
 
       <div className="space-y-6 pb-12">
-        
-        {/* Bagian 1: Kategori & Kode */}
+
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 grid grid-cols-1 md:grid-cols-2 gap-6">
           <ReadOnlyField label="Kategori" value={data.kategori} />
           <ReadOnlyField label="Kode Pemesanan" value={data.kodePemesanan} />
         </div>
 
-        {/* Bagian 2: Data Pemesan */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           <div className="bg-[#eef5f5] px-6 py-3 border-b border-gray-200 flex items-center gap-2 text-teal-800 font-semibold">
             <span className="w-5 h-5 rounded-full border-2 border-current flex items-center justify-center text-xs">i</span>
@@ -76,7 +74,7 @@ export default function PemesananDetail() {
             <ReadOnlyField label="Nama Instansi Pemesan" value={data.namaInstansi} />
             <ReadOnlyField label="Nama PIC" value={data.namaPIC} />
             <ReadOnlyField label="Nomor Telepon PIC" value={data.noTelpPIC} />
-            <ReadOnlyField label="E-Mail" value={data.emailPIC} />
+            {data.kategori !== 'IoT Inaproc' && <ReadOnlyField label="E-Mail" value={data.emailPIC} />}
             <ReadOnlyField label="NIK PIC" value={data.nikPIC} />
             <ReadOnlyField label="Nomor NPWP" value={data.noNPWP} />
             <ReadOnlyField label="Alamat" value={data.alamat} />
@@ -85,7 +83,6 @@ export default function PemesananDetail() {
           </div>
         </div>
 
-        {/* Bagian 3: Detail Dinamis */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           <div className="bg-[#eef5f5] px-6 py-3 border-b border-gray-200 flex items-center gap-2 text-teal-800 font-semibold">
             <span className="w-5 h-5 rounded-full border-2 border-current flex items-center justify-center text-xs">i</span>
@@ -114,13 +111,13 @@ export default function PemesananDetail() {
                 <ReadOnlyField label="Harga" value={data.harga} />
                 <ReadOnlyField label="PPN 11%" value={data.ppn11} />
                 <ReadOnlyField label="Ongkir KUT" value={data.ongkirKUT} />
-                <ReadOnlyField label="Harga PPN 11% Ongkir" value={data.hargaPPN11Ongkir} />
+                <ReadOnlyField label="Harga PPN 11% + Ongkir" value={data.hargaPPN11Ongkir} />
                 <ReadOnlyField label="Total Harga + Ongkir" value={data.totalHargaOngkir} />
                 <ReadOnlyField label="Total Harga Jual" value={data.totalHargaJual} />
                 <ReadOnlyField label="Harga PPN 11% Ongkir Reseller" value={data.hargaPPN11OngkirReseller} />
                 <ReadOnlyField label="PPN 11% Reseller" value={data.ppn11Reseller} />
                 <ReadOnlyField label="Ongkir Reseller" value={data.ongkirReseller} />
-                <div className="hidden md:block"></div>
+                <ReadOnlyField label="Harga PPN 11% + Ongkir" value={data.hargaPPN11PlusOngkirReseller} />
                 <ReadOnlyField label="Total Harga + Ongkir Reseller" value={data.totalHargaOngkirReseller} />
                 <ReadOnlyField label="Total Harga Reseller" value={data.totalHargaReseller} />
               </>
@@ -129,7 +126,7 @@ export default function PemesananDetail() {
             <ReadOnlyField label="Status Pesanan" value={data.statusPesanan} />
             <ReadOnlyField label="Status Odoo" value={data.statusOdoo} />
 
-            {isManual && (
+            {data.kategori === 'IoT Manual' && (
               <>
                 <ReadOnlyField label="Bulan Pengiriman SPH" value={data.bulanPengirimanSPH} />
                 <ReadOnlyField label="Nomor Surat Penawaran Harga" value={data.nomorSuratPenawaranHarga} />
@@ -150,7 +147,6 @@ export default function PemesananDetail() {
           </div>
         </div>
 
-        {/* Bagian 4: Detail Purchase Order */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           <div className="bg-[#eef5f5] px-6 py-3 border-b border-gray-200 flex items-center gap-2 text-teal-800 font-semibold">
             <span className="w-5 h-5 rounded-full border-2 border-current flex items-center justify-center text-xs">i</span>
@@ -165,7 +161,9 @@ export default function PemesananDetail() {
             <ReadOnlyField label="Nomor BAST" value={data.nomorBAST} />
             <ReadOnlyField label="Nomor Invoice KUT" value={data.nomorInvoiceKUT} />
             <ReadOnlyField label="Tanggal Invoice KUT" value={formatDate(data.tanggalInvoiceKUT)} />
-            <ReadOnlyField label="Nomor Invoice Inaproc" value={data.nomorInvoiceInaproc} />
+            {data.kategori !== 'IoT Manual' && (
+              <ReadOnlyField label="Nomor Invoice Inaproc" value={data.nomorInvoiceInaproc} />
+            )}
             <ReadOnlyField label="NSFP" value={data.nsfp} />
             <ReadOnlyField label="Tanggal Uang Masuk" value={formatDate(data.tanggalUangMasuk)} />
             <ReadOnlyField label="Jumlah Uang Masuk" value={data.jumlahUangMasuk} />

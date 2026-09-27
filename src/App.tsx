@@ -19,8 +19,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="/login" element={<LoginPage />} />
-        
-        {/* Protected Routes */}
+
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/pemesanan" element={<PemesananList />} />
@@ -29,6 +28,7 @@ export default function App() {
           <Route path="/pemesanan/:id" element={<PemesananDetail />} />
           <Route path="/spj" element={<SPJPage />} />
           <Route path="/spj/add" element={<SPJAdd />} />
+          <Route path="/spj/edit/:id" element={<SPJAdd />} />
           <Route path="/spj/:id" element={<SPJDetail />} />
           <Route path="/master-data" element={<MasterData />} />
           <Route path="/settings" element={<SettingsPage />} />

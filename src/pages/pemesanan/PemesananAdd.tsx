@@ -16,7 +16,6 @@ const formSchema = z.object({
   kodePemesanan: z.string().min(1, "Kode Pemesanan wajib diisi"),
   instansi: z.string().min(1, "Pilih Instansi"),
   pic: z.string().min(1, "PIC wajib diisi"),
-  produkId: z.string().min(1, "Pilih Produk"),
   telp: z.string().optional(),
   email: z.string().optional(),
   nik: z.string().optional(),
@@ -39,10 +38,10 @@ const formSchema = z.object({
   hargaPPN11Ongkir: z.string().optional(),
   totalHargaOngkir: z.string().optional(),
   totalHargaJual: z.string().optional(),
-  hargaPPN11OngkirReseller: z.string().optional(),
+  hargaProdukReseller: z.string().optional(),
   ppn11Reseller: z.string().optional(),
   ongkirReseller: z.string().optional(),
-  hargaPPN11PlusOngkirReseller: z.string().optional(),
+  hargaPPN11OngkirReseller: z.string().optional(),
   totalHargaOngkirReseller: z.string().optional(),
   nomorSuratPenawaranHarga: z.string().optional(),
   bulanPengirimanSPH: z.string().optional(),
@@ -76,7 +75,7 @@ export default function PemesananAdd() {
   const { id } = useParams()
   const queryClient = useQueryClient()
   
-  const { data: editData } = useQuery({
+  const { data: editData, isError, error } = useQuery({
     queryKey: ['pemesanan', id],
     queryFn: () => pemesananApi.getById(id!),
     enabled: !!id
@@ -85,7 +84,7 @@ export default function PemesananAdd() {
   const { register, handleSubmit, watch, setValue, reset } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      kategori: "", kodePemesanan: "", instansi: "", pic: "", produkId: ""
+      kategori: "", kodePemesanan: "", instansi: "", pic: ""
     }
   });
 
@@ -94,9 +93,11 @@ export default function PemesananAdd() {
   const watchInstansi = watch("instansi");
   const watchPIC = watch("pic");
 
-  const { data: produkList = [] } = useQuery({ queryKey: ["master_produk"], queryFn: masterApi.getProduk })
   const { data: instansiList = [] } = useQuery({ queryKey: ["master_instansi"], queryFn: masterApi.getInstansi })
   const { data: picList = [] } = useQuery({ queryKey: ["master_pic"], queryFn: masterApi.getPIC })
+  const { data: wilayahList = [] } = useQuery({ queryKey: ["master_wilayah"], queryFn: masterApi.getWilayah })
+  const { data: ekspedisiList = [] } = useQuery({ queryKey: ["master_ekspedisi"], queryFn: masterApi.getEkspedisi })
+  const { data: options = {} as Record<string, string[]> } = useQuery({ queryKey: ["master_options"], queryFn: masterApi.getOptions })
 
   useEffect(() => {
     if (watchInstansi) {
@@ -142,13 +143,15 @@ export default function PemesananAdd() {
       alert('Data berhasil disimpan!')
       navigate('/pemesanan')
     },
-    onError: (err) => {
-      alert('Gagal menyimpan data: ' + (err as Error).message)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (err: any) => {
+      const backendError = err.response?.data?.error || err.message;
+      alert('Gagal menyimpan data: ' + backendError)
     }
   })
 
   const onSubmit = (data: FormValues) => {
-    const { kategori, kodePemesanan, instansi, pic, produkId, telp, email, nik, npwp, alamat, kota, provinsi, ...detail } = data;
+    const { kategori, kodePemesanan, instansi, pic, telp, email, nik, npwp, alamat, kota, provinsi, ...detail } = data;
     const instansiItem = instansiList.find(i => i.namaInstansi === instansi);
     const picItem = picList.find(p => p.namaPIC === pic);
 
@@ -157,7 +160,6 @@ export default function PemesananAdd() {
       kodePemesanan,
       namaInstansi: instansiItem ? String(instansiItem.id) : instansi,
       namaPIC: picItem ? String(picItem.id) : pic,
-      produkId,
       noTelpPIC: telp || "",
       emailPIC: email || "",
       nikPIC: nik || "",
@@ -187,6 +189,12 @@ export default function PemesananAdd() {
         </button>
         <h2 className="text-xl font-semibold text-gray-800">{id ? 'Form Edit Data' : 'Form Tambah Data'}</h2>
       </div>
+        {isError && (
+          <div className="bg-red-50 text-red-500 p-4 rounded-md mb-6 overflow-auto">
+            <p className="font-bold">Gagal mengambil data API untuk di-edit:</p>
+            <p className="mt-2 text-sm text-red-700">Pesan: {(error as Error)?.message || "Unknown error"}</p>
+          </div>
+        )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 pb-12">
 
@@ -292,19 +300,6 @@ export default function PemesananAdd() {
               </div>
               <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
 
-                <div className="space-y-1 md:col-span-2 mb-2">
-                  <label className="text-sm font-medium text-gray-700">Pilih Produk <span className="text-red-500">*</span></label>
-                  <select 
-                    {...register("produkId")}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0f766e] bg-white"
-                    required
-                  >
-                    <option value="" disabled>Pilih Produk dari Master Data</option>
-                    {produkList.map(item => (
-                      <option key={item.id} value={item.id}>{item.namaProduk} ({item.kategori})</option>
-                    ))}
-                  </select>
-                </div>
 
                 {isIoT && (
                   <>
@@ -332,10 +327,11 @@ export default function PemesananAdd() {
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">Tipe Timbangan Produk <span className="text-red-500">*</span></label>
                       <select {...register("tipeTimbangan")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
-                        <option value="">Pilih Tipe</option>
-                        <option value="Tipe A">Tipe A</option>
-                        <option value="Tipe B">Tipe B</option>
-                      </select>
+                          <option value="">Pilih Tipe</option>
+                          {options.tipe_timbangan?.map((opt: string) => (
+                            <option key={opt} value={opt}>{opt}</option>
+                          ))}
+                        </select>
                     </div>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">Quantity <span className="text-red-500">*</span></label>
@@ -345,8 +341,9 @@ export default function PemesananAdd() {
                       <label className="text-sm font-medium text-gray-700">Wilayah Pengiriman <span className="text-red-500">*</span></label>
                       <select {...register("wilayahPengiriman")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
                         <option value="">Pilih Wilayah</option>
-                        <option value="Jawa">Jawa</option>
-                        <option value="Luar Jawa">Luar Jawa</option>
+                        {wilayahList.map(item => (
+                          <option key={item.id} value={item.id}>{item.namaWilayah}</option>
+                        ))}
                       </select>
                     </div>
                     <div className="space-y-1">
@@ -357,8 +354,9 @@ export default function PemesananAdd() {
                       <label className="text-sm font-medium text-gray-700">Ekspedisi</label>
                       <select {...register("ekspedisi")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
                         <option value="">Pilih Ekspedisi</option>
-                        <option value="JNE">JNE</option>
-                        <option value="JNT">JNT</option>
+                        {ekspedisiList.map(item => (
+                          <option key={item.id} value={item.id}>{item.namaEkspedisi}</option>
+                        ))}
                       </select>
                     </div>
                     <div className="space-y-1">
@@ -397,8 +395,8 @@ export default function PemesananAdd() {
                       <input type="text" placeholder="Rp" {...register("totalHargaJual")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-sm font-medium text-gray-700">Harga PPN 11% Ongkir Reseller <span className="text-red-500">*</span></label>
-                      <input type="text" placeholder="Rp" {...register("hargaPPN11OngkirReseller")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+                      <label className="text-sm font-medium text-gray-700">Harga Produk Reseller <span className="text-red-500">*</span></label>
+                      <input type="text" placeholder="Rp" {...register("hargaProdukReseller")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
                     </div>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">PPN 11% Reseller <span className="text-red-500">*</span></label>
@@ -409,8 +407,8 @@ export default function PemesananAdd() {
                       <input type="text" placeholder="Rp" {...register("ongkirReseller")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-sm font-medium text-gray-700">Harga PPN 11% + Ongkir <span className="text-red-500">*</span></label>
-                      <input type="text" placeholder="Rp" {...register("hargaPPN11PlusOngkirReseller")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+                      <label className="text-sm font-medium text-gray-700">Harga PPN 11% + Ongkir Reseller <span className="text-red-500">*</span></label>
+                      <input type="text" placeholder="Rp" {...register("hargaPPN11OngkirReseller")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
                     </div>
                     
                     <div className="space-y-1">
@@ -426,18 +424,20 @@ export default function PemesananAdd() {
 
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700">Status Pesanan <span className="text-red-500">*</span></label>
-                  <select {...register("statusPesanan")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                  <select {...register("statusPesanan")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0f766e] bg-white">
                     <option value="">Pilih Status</option>
-                    <option value="Sudah Pembayaran">Sudah Pembayaran</option>
-                    <option value="Belum Pembayaran">Belum Pembayaran</option>
+                    {options.status_pesanan?.map((opt: string) => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
                   </select>
                 </div>
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700">Status Odoo <span className="text-red-500">*</span></label>
-                  <select {...register("statusOdoo")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                  <select {...register("statusOdoo")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0f766e] bg-white">
                     <option value="">Pilih Status</option>
-                    <option value="Sudah Ada">Sudah Ada</option>
-                    <option value="Belum Ada">Belum Ada</option>
+                    {options.status_odoo?.map((opt: string) => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
                   </select>
                 </div>
 
@@ -538,14 +538,17 @@ export default function PemesananAdd() {
                   <label className="text-sm font-medium text-gray-700">Rekening Penerima <span className="text-red-500">*</span></label>
                   <input type="text" placeholder="Masukkan Nomor Rekening Penerima" {...register("rekeningPenerima")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
                 </div>
-                <div className="space-y-1">
-                  <label className="text-sm font-medium text-gray-700">Kode Bayar <span className="text-red-500">*</span></label>
-                  <select {...register("kodeBayar")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
-                    <option value="">Pilih Kode Bayar</option>
-                    <option value="UP">UP</option>
-                    <option value="LS">LS</option>
-                  </select>
-                </div>
+                {watchKategori !== 'IoT Manual' && (
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium text-gray-700">Kode Bayar <span className="text-red-500">*</span></label>
+                    <select {...register("kodeBayar")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                        <option value="">Pilih Kode Bayar</option>
+                        {options.kode_bayar?.map((opt: string) => (
+                          <option key={opt} value={opt}>{opt}</option>
+                        ))}
+                      </select>
+                  </div>
+                )}
                 <div className="space-y-1 md:col-span-2">
                   <label className="text-sm font-medium text-gray-700">Keterangan <span className="text-red-500">*</span></label>
                   <textarea placeholder="Masukkan Keterangan" {...register("keterangan")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" rows={3}></textarea>
@@ -575,4 +578,9 @@ export default function PemesananAdd() {
     </DashboardLayout>
   )
 }
+
+
+
+
+
 

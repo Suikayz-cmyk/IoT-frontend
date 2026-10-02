@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type { BackendResponse, MasterInstansi as BInstansi, MasterPIC as BPIC, MasterProduk as BProduk, MasterWilayah as BWilayah, MasterEkspedisi as BEkspedisi } from '@/types/backend';
+import type { BackendResponse, MasterInstansi as BInstansi, MasterPIC as BPIC, MasterWilayah as BWilayah, MasterEkspedisi as BEkspedisi, MasterProduk as BProduk } from '@/types/backend';
 
 export interface MasterInstansi {
   id: string;
@@ -22,8 +22,10 @@ export interface MasterPIC {
 
 export interface MasterProduk {
   id: string;
+  kodeProduk: string;
   namaProduk: string;
-  kategori: string;
+  jenisProduk: string;
+  harga: number;
 }
 
 export interface MasterEkspedisi {
@@ -46,6 +48,10 @@ const getAuthHeaders = () => {
 }
 
 export const masterApi = {
+  getOptions: async () => {
+    const res = await axios.get('/api/options', { headers: getAuthHeaders() });
+    return res.data.data || {};
+  },
   getInstansi: async (): Promise<MasterInstansi[]> => {
     const res = await axios.get<BackendResponse<BInstansi[]>>('/api/instansi', { headers: getAuthHeaders() });
     const data = res.data.data || [];
@@ -125,32 +131,34 @@ export const masterApi = {
     await axios.delete(`/api/pic/${id}`, { headers: getAuthHeaders() });
   },
 
-  getProduk: async (): Promise<MasterProduk[]> => {
-    const res = await axios.get<BackendResponse<BProduk[]>>('/api/produk', { headers: getAuthHeaders() });
+    getProduk: async (): Promise<MasterProduk[]> => {
+    const res = await axios.get<BackendResponse<BProduk[]>>("/api/produk", { headers: getAuthHeaders() });
     const data = res.data.data || [];
     return data.map((d: BProduk) => ({
       id: String(d.id),
-      namaProduk: (d.nama_produk as string) || '',
-      kategori: (d.jenis_produk as string) || ''
+      kodeProduk: (d.kode_produk as string) || "",
+      namaProduk: (d.nama_produk as string) || "",
+      jenisProduk: (d.jenis_produk as string) || "",
+      harga: Number(d.harga) || 0
     }));
   },
-  addProduk: async (data: Omit<MasterProduk, 'id'>) => {
+  addProduk: async (data: Omit<MasterProduk, "id">) => {
     const payload = {
+      kode_produk: data.kodeProduk,
       nama_produk: data.namaProduk,
-      jenis_produk: data.kategori,
-      kode_produk: '-',
-      harga: 0,
+      jenis_produk: data.jenisProduk,
+      harga: Number(data.harga),
       status: 1
     };
-    const res = await axios.post('/api/produk', payload, { headers: getAuthHeaders() });
+    const res = await axios.post("/api/produk", payload, { headers: getAuthHeaders() });
     return res.data;
   },
   updateProduk: async (data: MasterProduk) => {
     const payload = {
+      kode_produk: data.kodeProduk,
       nama_produk: data.namaProduk,
-      jenis_produk: data.kategori,
-      kode_produk: '-',
-      harga: 0,
+      jenis_produk: data.jenisProduk,
+      harga: Number(data.harga),
       status: 1
     };
     const res = await axios.put(`/api/produk/${data.id}`, payload, { headers: getAuthHeaders() });

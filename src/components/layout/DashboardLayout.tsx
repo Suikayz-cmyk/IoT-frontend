@@ -65,13 +65,13 @@ export default function DashboardLayout({
 
   return (
     <div className="h-screen w-full overflow-hidden flex bg-[#f8f9fa] font-sans">
-      {/* Sidebar */}
+      
       <aside 
         className={`relative bg-white border-r border-gray-200 flex flex-col py-4 shadow-sm z-10 shrink-0 transition-all duration-300 ease-in-out ${
           isSidebarOpen ? 'w-60 px-4' : 'w-16 items-center'
         }`}
       >
-        {/* Toggle Button */}
+        
         <button 
           onClick={toggleSidebar}
           className="absolute -right-3 top-6 bg-white border border-gray-200 text-gray-500 rounded-full p-1 shadow-sm hover:text-gray-800 hover:bg-gray-50 z-20 transition-transform"
@@ -79,7 +79,6 @@ export default function DashboardLayout({
           {isSidebarOpen ? <ChevronLeft size={14} strokeWidth={3} /> : <ChevronRight size={14} strokeWidth={3} />}
         </button>
 
-        {/* Top: Avatar */}
         <div className={`flex items-center gap-3 mb-6 cursor-pointer ${isSidebarOpen ? 'px-1' : ''}`}>
           <div className="relative shrink-0">
             <div className="w-9 h-9 rounded-full bg-gray-200 overflow-hidden shadow-sm">
@@ -95,7 +94,6 @@ export default function DashboardLayout({
           )}
         </div>
 
-        {/* Middle: Navigation Icons */}
         <nav className={`flex flex-col flex-1 w-full ${isSidebarOpen ? 'gap-1' : 'gap-3 items-center'}`}>
           {navItems.map((item) => {
             const isActive = location.pathname.startsWith(item.path) && item.path !== '/' || location.pathname === item.path;
@@ -127,7 +125,6 @@ export default function DashboardLayout({
           })}
         </nav>
 
-        {/* Bottom: Logout and Plus Button */}
         <div className={`mt-auto pt-4 flex flex-col gap-3 ${isSidebarOpen ? 'w-full' : 'items-center'}`}>
           <button 
             onClick={handleLogout}
@@ -142,13 +139,11 @@ export default function DashboardLayout({
         </div>
       </aside>
 
-      {/* Main Content */}
       <main className="flex-1 px-6 pb-6 pt-0 lg:px-8 lg:pb-8 relative overflow-y-auto">
         {(title || onExport) && (
           <div className="flex justify-between items-start w-full mb-8 pt-6">
             <h1 className="text-3xl font-normal text-[#0f766e]">{title}</h1>
-            
-            {/* Export Button */}
+
             {onExport && (
               <button 
                 onClick={onExport}

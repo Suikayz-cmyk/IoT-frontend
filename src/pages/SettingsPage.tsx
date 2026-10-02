@@ -8,16 +8,13 @@ import { ImagePlus } from 'lucide-react'
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState('account')
   
-  // Ambil data user dari local storage
   const userEmail = localStorage.getItem('userEmail') || 'admin@iot.local'
   const userName = userEmail.split('@')[0]
   const displayName = userName.charAt(0).toUpperCase() + userName.slice(1)
 
-  // States untuk Profile Form
   const [fullName, setFullName] = useState(displayName)
-  const [email] = useState(userEmail) // read-only untuk sekarang
+  const [email] = useState(userEmail) 
 
-  // States untuk Reset Password Flow
   const [resetStep, setResetStep] = useState<1 | 2>(1)
   const [resetToken, setResetToken] = useState('')
   const [newPassword, setNewPassword] = useState('')
@@ -68,11 +65,9 @@ export default function SettingsPage() {
   return (
     <DashboardLayout title="Settings">
       <div className="p-6 h-full flex flex-col">
-        
-        {/* Main Container with thick blue border just like the mockup */}
+
         <div className="flex-1 bg-white rounded-xl shadow-sm border-[3px] border-[#2292f7] flex flex-col overflow-hidden">
-          
-          {/* Top Tabs */}
+
           <div className="flex px-6 pt-4 border-b border-gray-200 gap-8 overflow-x-auto">
             <button 
               onClick={() => setActiveTab('account')}
@@ -131,14 +126,11 @@ export default function SettingsPage() {
             </button>
           </div>
 
-          {/* Content Area */}
           <div className="p-8 flex-1 overflow-y-auto">
-            
-            {/* TAB 1: Account Setting */}
+
             {activeTab === 'account' && (
               <form onSubmit={handleUpdateProfile} className="max-w-4xl">
-                
-                {/* Profile Picture */}
+
                 <div className="mb-8">
                   <label className="block text-sm text-gray-700 font-medium mb-3">Your Profile Picture</label>
                   <div className="flex items-center gap-6">
@@ -152,7 +144,6 @@ export default function SettingsPage() {
                   </div>
                 </div>
 
-                {/* Form Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mb-8">
                   <div className="space-y-1.5">
                     <label className="text-sm font-medium text-gray-700">Full name</label>
@@ -200,7 +191,6 @@ export default function SettingsPage() {
               </form>
             )}
 
-            {/* TAB 2: Login & Security */}
             {activeTab === 'security' && (
               <div className="max-w-2xl">
                 <h3 className="text-lg font-bold text-gray-800 mb-6">Change Password</h3>
@@ -251,7 +241,6 @@ export default function SettingsPage() {
               </div>
             )}
 
-            {/* OTHER TABS (DUMMY) */}
             {activeTab === 'users' && (
               <div>
                 <h2 className="text-xl font-bold text-gray-800 mb-2">User Management</h2>

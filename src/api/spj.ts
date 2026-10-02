@@ -8,34 +8,44 @@ const getAuthHeaders = () => {
 
 export const spjApi = {
   findAll: async (): Promise<any[]> => {
-    // 1. Fetch Orders to get those with jenis_order = SPJ
-    const res = await axios.get('/api/orders', { headers: getAuthHeaders() })
-    const orders = res.data.data || []
-    const spjOrders = orders.filter((o: any) => o.jenis_order === 'SPJ')
+    const [ordersRes, spjRes] = await Promise.all([
+      axios.get('/api/orders', { headers: getAuthHeaders() }),
+      axios.get('/api/spj', { headers: getAuthHeaders() }).catch(() => ({ data: { data: [] } }))
+    ]);
+    
+    const orders = ordersRes.data.data || []
+    const spjDetails = spjRes.data.data || []
+    
+    const spjOrders = orders.filter((o: any) => 
+      String(o.kode_order).startsWith('SPJ-') || o.keterangan === 'SPJ' || spjDetails.some((s: any) => s.order_id === o.id)
+    )
 
-    return spjOrders.map((order: any) => ({
-      id: String(order.id),
-      kodePemesanan: order.kode_order,
-      namaInstansi: order.instansi_id ? String(order.instansi_id) : '',
-      namaPIC: order.pic_id ? String(order.pic_id) : '',
-      statusPesanan: order.status,
-      tanggalOrder: order.tanggal_order,
-    }))
+    return spjOrders.map((order: any) => {
+      const spjDetail = spjDetails.find((s: any) => s.order_id === order.id) || {};
+      return {
+        id: String(order.id),
+        kodePemesanan: order.kode_order,
+        namaInstansi: order.instansi?.nama_instansi || (order.instansi_id ? String(order.instansi_id) : ''),
+        namaPIC: order.pic?.nama_pic || (order.pic_id ? String(order.pic_id) : ''),
+        statusPesanan: order.status,
+        tanggalOrder: order.tanggal_order,
+        kebutuhanSPJ: spjDetail.kebutuhan_spj || '-',
+        tglPrint: spjDetail.tanggal_print || '-',
+        tglUpdateList: spjDetail.tanggal_update_list || '-',
+        picPrint: spjDetail.pic_print || '-',
+        tglPengiriman: spjDetail.tanggal_pengiriman || '-'
+      };
+    })
   },
 
   findById: async (id: string): Promise<any> => {
-    // 1. Fetch Order
     const res = await axios.get(`/api/orders/${id}`, { headers: getAuthHeaders() })
     const order = res.data.data || res.data
 
     let specificData: any = {}
     
-    // 2. Fetch SPJ details
-    try {
-      const specRes = await axios.get(`/api/spj/order/${id}`, { headers: getAuthHeaders() })
-      specificData = specRes.data?.data || {}
-    } catch (e) {
-      console.warn('SPJ detail not found', e)
+    if (order.spj && Array.isArray(order.spj) && order.spj.length > 0) {
+      specificData = order.spj[0];
     }
 
     return {
@@ -55,65 +65,85 @@ export const spjApi = {
       tglPengiriman: specificData.tanggal_pengiriman,
       tglParaf: specificData.tanggal_paraf,
       picPrint: specificData.pic_print,
+      spj_id: specificData.id,
     }
   },
 
   create: async (payload: any): Promise<any> => {
-    // 1. Create Order
-    const orderData = {
-      kode_order: `SPJ-${Date.now()}`, // Or allow payload to specify
-      jenis_order: 'SPJ',
-      instansi_id: payload.namaInstansi ? Number(payload.namaInstansi) : null,
-      pic_id: payload.namaPIC ? Number(payload.namaPIC) : null,
-      status: 'Diproses',
-      qty: 1,
-      harga_ppn: 0,
-      tanggal_order: new Date().toISOString().split('T')[0]
-    };
+      const headers = getAuthHeaders();
+      
+      const spjPayload = {
+        kode_order: `SPJ-${Date.now()}`,
+        jenis_order: 'manual',
+        kategori_order: 'iot_manual',
+        keterangan: 'SPJ',
+        instansi_id: payload.namaInstansi ? Number(payload.namaInstansi) : null,
+        pic_id: payload.namaPIC ? Number(payload.namaPIC) : null,
+        status: payload.statusPesanan || 'Diproses',
+        tanggal_po: new Date().toISOString().split('T')[0],
+
+        kebutuhan_spj: payload.kebutuhanSPJ || '',
+        jumlah_rangkap: payload.jumlahRangkap ? Number(payload.jumlahRangkap) : 1,
+        jenis_kertas: payload.jenisKertas || '',
+        jenis_file: payload.jenisFile || '',
+        tanggal_print: payload.tglPrint || null,
+        tanggal_update_list: payload.tglUpdateList || null,
+        tanggal_sign: payload.tglSign || null,
+        tanggal_pengiriman: payload.tglPengiriman || null,
+        tanggal_paraf: payload.tglParaf || null,
+        pic_print: payload.picPrint || '',
+      };
+      
+      let spjRes;
+      try {
+        spjRes = await axios.post('/api/spj', spjPayload, { headers });
+      } catch (e) {
+        console.error('Failed to create SPJ', e);
+        throw e;
+      }
+  
+      return spjRes.data;
+    },
+  update: async (id: string, payload: any): Promise<any> => {
     const headers = getAuthHeaders();
     
-    let orderRes;
-    try {
-      orderRes = await axios.post('/api/orders', orderData, { headers });
-    } catch (e) {
-      console.error('Failed to create SPJ order', e);
-      throw new Error('Gagal membuat Order SPJ di database', { cause: e });
+    const res = await axios.get(`/api/orders/${id}`, { headers });
+    const fullOrder = res.data.data || res.data;
+    
+    let orderChanged = false;
+    if (payload.namaInstansi !== undefined) { fullOrder.instansi_id = Number(payload.namaInstansi) || null; orderChanged = true; }
+    if (payload.namaPIC !== undefined) { fullOrder.pic_id = Number(payload.namaPIC) || null; orderChanged = true; }
+    if (payload.statusPesanan !== undefined) { fullOrder.status = payload.statusPesanan; orderChanged = true; }
+
+    if (orderChanged) {
+      await axios.put(`/api/orders/${id}`, fullOrder, { headers });
+    }
+    
+    if (payload.kebutuhanSPJ !== undefined || payload.tglPrint !== undefined || payload.statusPesanan !== undefined) {
+      try {
+        const spjData = (fullOrder.spj && Array.isArray(fullOrder.spj) && fullOrder.spj.length > 0) ? fullOrder.spj[0] : null;
+        if (spjData && spjData.id) {
+          const spjUpdateData = {
+            ...spjData,
+            kebutuhan_spj: payload.kebutuhanSPJ !== undefined ? payload.kebutuhanSPJ : spjData.kebutuhan_spj,
+            jumlah_rangkap: payload.jumlahRangkap ? Number(payload.jumlahRangkap) : spjData.jumlah_rangkap,
+            jenis_kertas: payload.jenisKertas !== undefined ? payload.jenisKertas : spjData.jenis_kertas,
+            jenis_file: payload.jenisFile !== undefined ? payload.jenisFile : spjData.jenis_file,
+            tanggal_print: payload.tglPrint !== undefined ? payload.tglPrint : spjData.tanggal_print,
+            tanggal_update_list: payload.tglUpdateList !== undefined ? payload.tglUpdateList : spjData.tanggal_update_list,
+            tanggal_sign: payload.tglSign !== undefined ? payload.tglSign : spjData.tanggal_sign,
+            tanggal_pengiriman: payload.tglPengiriman !== undefined ? payload.tglPengiriman : spjData.tanggal_pengiriman,
+            tanggal_paraf: payload.tglParaf !== undefined ? payload.tglParaf : spjData.tanggal_paraf,
+            pic_print: payload.picPrint !== undefined ? payload.picPrint : spjData.pic_print,
+            status: payload.statusPesanan !== undefined ? payload.statusPesanan : spjData.status
+          };
+          await axios.put(`/api/spj/${spjData.id}`, spjUpdateData, { headers });
+        }
+      } catch (e) {
+        console.warn("Gagal update tabel SPJ", e);
+      }
     }
 
-    const orderId = orderRes.data?.data?.id;
-    if (!orderId) throw new Error('Order ID tidak ditemukan');
-
-    // 2. Create SPJ Detail
-    const spjData = {
-      order_id: orderId,
-      kebutuhan_spj: payload.kebutuhanSPJ || '',
-      jumlah_rangkap: payload.jumlahRangkap ? Number(payload.jumlahRangkap) : 1,
-      jenis_kertas: payload.jenisKertas || '',
-      jenis_file: payload.jenisFile || '',
-      tanggal_print: payload.tglPrint || null,
-      tanggal_update_list: payload.tglUpdateList || null,
-      tanggal_sign: payload.tglSign || null,
-      tanggal_pengiriman: payload.tglPengiriman || null,
-      tanggal_paraf: payload.tglParaf || null,
-      pic_print: payload.picPrint || '',
-      status: payload.statusPesanan || 'Diproses'
-    };
-    await axios.post('/api/spj', spjData, { headers });
-
-    return orderRes.data;
-  },
-
-  update: async (id: string, payload: any): Promise<any> => {
-    const orderData: any = {};
-    if (payload.namaInstansi !== undefined) orderData.instansi_id = Number(payload.namaInstansi) || null;
-    if (payload.namaPIC !== undefined) orderData.pic_id = Number(payload.namaPIC) || null;
-    if (payload.statusPesanan !== undefined) orderData.status = payload.statusPesanan;
-
-    const headers = getAuthHeaders();
-    if (Object.keys(orderData).length > 0) {
-      await axios.put(`/api/orders/${id}`, orderData, { headers });
-    }
-    // Update SPJ details ideally needs SPJ ID. We assume SPJ is linked and backend handles or we ignore for now.
     return { id, ...payload } as any;
   },
 
@@ -122,7 +152,6 @@ export const spjApi = {
   },
 
   exportExcel: async () => {
-    // Placeholder as it likely requires a different structure now
     const response = await axios.get('/api/spj/export', {
       headers: getAuthHeaders(),
       responseType: 'blob',

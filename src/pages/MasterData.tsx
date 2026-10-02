@@ -4,7 +4,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout'
 import { Trash2, Plus, Edit2, X } from 'lucide-react'
 import { masterApi } from '@/api/masterApi'
 
-type TabType = 'instansi' | 'pic' | 'produk' | 'ekspedisi' | 'wilayah'
+type TabType = 'instansi' | 'pic' | 'ekspedisi' | 'wilayah'
 
 export default function MasterData() {
   const [activeTab, setActiveTab] = useState<TabType>('instansi')
@@ -17,8 +17,7 @@ export default function MasterData() {
   // Queries
   const { data: instansiList = [] } = useQuery({ queryKey: ['master_instansi'], queryFn: masterApi.getInstansi })
   const { data: picList = [] } = useQuery({ queryKey: ['master_pic'], queryFn: masterApi.getPIC })
-  const { data: produkList = [] } = useQuery({ queryKey: ['master_produk'], queryFn: masterApi.getProduk })
-  const { data: ekspedisiList = [] } = useQuery({ queryKey: ['master_ekspedisi'], queryFn: masterApi.getEkspedisi })
+    const { data: ekspedisiList = [] } = useQuery({ queryKey: ['master_ekspedisi'], queryFn: masterApi.getEkspedisi })
   const { data: wilayahList = [] } = useQuery({ queryKey: ['master_wilayah'], queryFn: masterApi.getWilayah })
 
   // Form States
@@ -34,10 +33,7 @@ export default function MasterData() {
   const [nik, setNik] = useState('')
   const [email, setEmail] = useState('')
   const [noTelp, setNoTelp] = useState('')
-  // Produk
-  const [namaProduk, setNamaProduk] = useState('')
-  const [kategori, setKategori] = useState('')
-  // Ekspedisi
+    // Ekspedisi
   const [namaEkspedisi, setNamaEkspedisi] = useState('')
   // Wilayah
   // using provinsi, kotaKab, alamat
@@ -51,29 +47,26 @@ export default function MasterData() {
   // Add Mutations
   const addInstansiMut = useMutation({ mutationFn: masterApi.addInstansi, onSuccess: () => invalidate('master_instansi') })
   const addPICMut = useMutation({ mutationFn: masterApi.addPIC, onSuccess: () => invalidate('master_pic') })
-  const addProdukMut = useMutation({ mutationFn: masterApi.addProduk, onSuccess: () => invalidate('master_produk') })
-  const addEkspedisiMut = useMutation({ mutationFn: masterApi.addEkspedisi, onSuccess: () => invalidate('master_ekspedisi') })
+    const addEkspedisiMut = useMutation({ mutationFn: masterApi.addEkspedisi, onSuccess: () => invalidate('master_ekspedisi') })
   const addWilayahMut = useMutation({ mutationFn: masterApi.addWilayah, onSuccess: () => invalidate('master_wilayah') })
 
   // Update Mutations
   const updInstansiMut = useMutation({ mutationFn: masterApi.updateInstansi, onSuccess: () => invalidate('master_instansi') })
   const updPICMut = useMutation({ mutationFn: masterApi.updatePIC, onSuccess: () => invalidate('master_pic') })
-  const updProdukMut = useMutation({ mutationFn: masterApi.updateProduk, onSuccess: () => invalidate('master_produk') })
-  const updEkspedisiMut = useMutation({ mutationFn: masterApi.updateEkspedisi, onSuccess: () => invalidate('master_ekspedisi') })
+    const updEkspedisiMut = useMutation({ mutationFn: masterApi.updateEkspedisi, onSuccess: () => invalidate('master_ekspedisi') })
   const updWilayahMut = useMutation({ mutationFn: masterApi.updateWilayah, onSuccess: () => invalidate('master_wilayah') })
 
   // Delete Mutations
   const delInstansiMut = useMutation({ mutationFn: masterApi.deleteInstansi, onSuccess: () => queryClient.invalidateQueries({ queryKey: ['master_instansi'] }) })
   const delPICMut = useMutation({ mutationFn: masterApi.deletePIC, onSuccess: () => queryClient.invalidateQueries({ queryKey: ['master_pic'] }) })
-  const delProdukMut = useMutation({ mutationFn: masterApi.deleteProduk, onSuccess: () => queryClient.invalidateQueries({ queryKey: ['master_produk'] }) })
-  const delEkspedisiMut = useMutation({ mutationFn: masterApi.deleteEkspedisi, onSuccess: () => queryClient.invalidateQueries({ queryKey: ['master_ekspedisi'] }) })
+    const delEkspedisiMut = useMutation({ mutationFn: masterApi.deleteEkspedisi, onSuccess: () => queryClient.invalidateQueries({ queryKey: ['master_ekspedisi'] }) })
   const delWilayahMut = useMutation({ mutationFn: masterApi.deleteWilayah, onSuccess: () => queryClient.invalidateQueries({ queryKey: ['master_wilayah'] }) })
 
   const resetForms = () => {
     setEditId(null)
     setNamaInstansi(''); setNpwp(''); setAlamat(''); setProvinsi(''); setKotaKab('');
     setInstansiId(''); setNamaPIC(''); setNik(''); setEmail(''); setNoTelp('');
-    setNamaProduk(''); setKategori('');
+    
     setNamaEkspedisi('');
   }
 
@@ -90,8 +83,6 @@ export default function MasterData() {
       setNamaInstansi(item.namaInstansi); setNik(item.nik || ''); setNpwp(item.npwp); setAlamat(item.alamat); setProvinsi(item.provinsi); setKotaKab(item.kotaKab);
     } else if (activeTab === 'pic') {
       setInstansiId(item.instansiId); setNamaPIC(item.namaPIC); setNik(item.nik); setEmail(item.email); setNoTelp(item.noTelp);
-    } else if (activeTab === 'produk') {
-      setNamaProduk(item.namaProduk); setKategori(item.kategori);
     } else if (activeTab === 'ekspedisi') {
       setNamaEkspedisi(item.namaEkspedisi);
     } else if (activeTab === 'wilayah') {
@@ -108,14 +99,11 @@ export default function MasterData() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (activeTab === 'instansi') {
-      if (editId) updInstansiMut.mutate({ id: editId, namaInstansi, nik, npwp, alamat, provinsi, kotaKab })
-      else addInstansiMut.mutate({ namaInstansi, nik, npwp, alamat, provinsi, kotaKab })
+      if (editId) updInstansiMut.mutate({ id: editId, namaInstansi, nik: '', npwp, alamat, provinsi, kotaKab })
+      else addInstansiMut.mutate({ namaInstansi, nik: '', npwp, alamat, provinsi, kotaKab })
     } else if (activeTab === 'pic') {
       if (editId) updPICMut.mutate({ id: editId, instansiId, namaPIC, nik, email, noTelp })
       else addPICMut.mutate({ instansiId, namaPIC, nik, email, noTelp })
-    } else if (activeTab === 'produk') {
-      if (editId) updProdukMut.mutate({ id: editId, namaProduk, kategori })
-      else addProdukMut.mutate({ namaProduk, kategori })
     } else if (activeTab === 'ekspedisi') {
       if (editId) updEkspedisiMut.mutate({ id: editId, namaEkspedisi })
       else addEkspedisiMut.mutate({ namaEkspedisi })
@@ -128,8 +116,7 @@ export default function MasterData() {
   const tabs: { id: TabType, label: string }[] = [
     { id: 'instansi', label: 'Master Instansi' },
     { id: 'pic', label: 'Master PIC' },
-    { id: 'produk', label: 'Master Produk' },
-    { id: 'ekspedisi', label: 'Master Ekspedisi' },
+        { id: 'ekspedisi', label: 'Master Ekspedisi' },
     { id: 'wilayah', label: 'Master Wilayah' },
   ]
 
@@ -166,9 +153,9 @@ export default function MasterData() {
               <thead className="bg-gray-50 text-gray-800 font-semibold border-b border-gray-200">
                 <tr>
                   <th className="px-4 py-3 w-12 text-center">No</th>
-                  {activeTab === 'instansi' && <><th className="px-4 py-3">Instansi</th><th className="px-4 py-3">NIK</th><th className="px-4 py-3">NPWP</th><th className="px-4 py-3">Alamat</th><th className="px-4 py-3">Kota/Kabupaten</th><th className="px-4 py-3">Provinsi</th></>}
+                  {activeTab === 'instansi' && <><th className="px-4 py-3">Instansi</th><th className="px-4 py-3">NPWP</th><th className="px-4 py-3">Alamat</th><th className="px-4 py-3">Kota/Kabupaten</th><th className="px-4 py-3">Provinsi</th></>}
                   {activeTab === 'pic' && <><th className="px-4 py-3">Instansi</th><th className="px-4 py-3">Nama PIC</th><th className="px-4 py-3">NIK</th><th className="px-4 py-3">Email</th><th className="px-4 py-3">Telepon</th></>}
-                  {activeTab === 'produk' && <><th className="px-4 py-3">Nama Produk</th><th className="px-4 py-3">Kategori</th></>}
+                  
                   {activeTab === 'ekspedisi' && <th className="px-4 py-3">Nama Ekspedisi</th>}
                   {activeTab === 'wilayah' && <><th className="px-4 py-3">Provinsi</th><th className="px-4 py-3">Kota/Kabupaten</th><th className="px-4 py-3">Alamat</th></>}
                   <th className="px-4 py-3 w-24 text-center">Aksi</th>
@@ -181,7 +168,6 @@ export default function MasterData() {
                   <tr key={item.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3 text-center">{idx + 1}</td>
                     <td className="px-4 py-3 font-medium text-gray-800">{item.namaInstansi}</td>
-                    <td className="px-4 py-3 font-mono text-xs text-gray-500">{item.nik || '-'}</td>
                     <td className="px-4 py-3 font-mono text-xs text-gray-500">{item.npwp || '-'}</td>
                     <td className="px-4 py-3 text-xs text-gray-600 truncate max-w-50" title={item.alamat}>{item.alamat || '-'}</td>
                     <td className="px-4 py-3 text-xs">{item.kotaKab}</td>
@@ -209,23 +195,8 @@ export default function MasterData() {
                   </tr>
                 ))}
 
-                {activeTab === 'produk' && produkList.length === 0 && <tr><td colSpan={4} className="text-center py-8">Belum ada data</td></tr>}
-                {activeTab === 'produk' && produkList.map((item, idx) => (
-                  <tr key={item.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 text-center">{idx + 1}</td>
-                    <td className="px-4 py-3 font-medium text-gray-800">{item.namaProduk}</td>
-                    <td className="px-4 py-3 text-xs">
-                      <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-full">{item.kategori || '-'}</span>
-                    </td>
-                    <td className="px-4 py-3 text-center flex items-center justify-center gap-2">
-                      <button onClick={() => openEditModal(item)} className="text-blue-500 hover:bg-blue-50 p-1.5 rounded"><Edit2 size={16}/></button>
-                      <button onClick={() => { if(confirm('Yakin ingin menghapus?')) delProdukMut.mutate(item.id) }} className="text-red-500 hover:bg-red-50 p-1.5 rounded"><Trash2 size={16}/></button>
-                    </td>
-                  </tr>
-                ))}
-
                 {activeTab === 'ekspedisi' && ekspedisiList.length === 0 && <tr><td colSpan={3} className="text-center py-8">Belum ada data</td></tr>}
-                {activeTab === 'ekspedisi' && ekspedisiList.map((item, idx) => (
+                                {activeTab === 'ekspedisi' && ekspedisiList.map((item, idx) => (
                   <tr key={item.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3 text-center">{idx + 1}</td>
                     <td className="px-4 py-3 font-medium text-gray-800">{item.namaEkspedisi}</td>
@@ -273,7 +244,6 @@ export default function MasterData() {
                 {activeTab === 'instansi' && (
                   <>
                     <input required placeholder="Nama Instansi" value={namaInstansi} onChange={e => setNamaInstansi(e.target.value)} className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-[#0f766e] outline-none" />
-                    <input placeholder="NIK (Opsional)" value={nik} onChange={e => setNik(e.target.value)} className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-[#0f766e] outline-none" />
                     <input placeholder="NPWP" value={npwp} onChange={e => setNpwp(e.target.value)} className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-[#0f766e] outline-none" />
                     <input required placeholder="Provinsi" value={provinsi} onChange={e => setProvinsi(e.target.value)} className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-[#0f766e] outline-none" />
                     <input required placeholder="Kota/Kabupaten" value={kotaKab} onChange={e => setKotaKab(e.target.value)} className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-[#0f766e] outline-none" />
@@ -294,19 +264,7 @@ export default function MasterData() {
                   </>
                 )}
 
-                {activeTab === 'produk' && (
-                  <>
-                    <input required placeholder="Nama Produk" value={namaProduk} onChange={e => setNamaProduk(e.target.value)} className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-[#0f766e] outline-none" />
-                    <select required value={kategori} onChange={e => setKategori(e.target.value)} className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-[#0f766e] outline-none bg-white">
-                      <option value="" disabled>Pilih Kategori</option>
-                      <option value="Software">Software</option>
-                      <option value="Hardware">Hardware</option>
-                      <option value="Timbangan">Timbangan</option>
-                      <option value="Lainnya">Lainnya</option>
-                    </select>
-                  </>
-                )}
-
+                
                 {activeTab === 'ekspedisi' && (
                   <input required placeholder="Nama Ekspedisi" value={namaEkspedisi} onChange={e => setNamaEkspedisi(e.target.value)} className="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-[#0f766e] outline-none" />
                 )}

@@ -4,7 +4,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout'
 import { Plus, Search, Eye } from 'lucide-react'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { spjApi } from '@/api/spj'
-import { Badge } from '@/components/ui/badge'
+import { formatDate } from '@/utils/formatters'
 
 export default function SPJPage() {
   const navigate = useNavigate()
@@ -13,6 +13,12 @@ export default function SPJPage() {
   const { data: spjList, isLoading, refetch } = useQuery({
     queryKey: ['spj'],
     queryFn: spjApi.findAll
+  })
+
+  const updateMut = useMutation({
+    mutationFn: ({ id, payload }: { id: string, payload: Record<string, string> }) => spjApi.update(id, payload),
+    onSuccess: () => refetch(),
+    onError: (err: Error) => alert('Gagal update status: ' + err.message)
   })
 
   const deleteMut = useMutation({
@@ -39,8 +45,7 @@ export default function SPJPage() {
       onExport={() => alert('Fitur Export dalam pengembangan')}
     >
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        
-        {/* Toolbar */}
+
         <div className="p-5 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="relative max-w-md w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
@@ -62,13 +67,16 @@ export default function SPJPage() {
           </button>
         </div>
 
-        {/* Table List */}
         <div className="overflow-x-auto min-h-100">
           <table className="w-full text-left border-collapse min-w-200">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-200 text-sm text-gray-500">
                 <th className="py-3 px-5 font-medium whitespace-nowrap">Kode SPJ</th>
                 <th className="py-3 px-5 font-medium">Instansi</th>
+                <th className="py-3 px-5 font-medium">Kebutuhan SPJ</th>
+                <th className="py-3 px-5 font-medium">Tgl Print</th>
+                <th className="py-3 px-5 font-medium">PIC Print</th>
+                <th className="py-3 px-5 font-medium">Tgl Pengiriman</th>
                 <th className="py-3 px-5 font-medium">Status Pesanan</th>
                 <th className="py-3 px-5 font-medium text-center">Aksi</th>
               </tr>
@@ -76,27 +84,37 @@ export default function SPJPage() {
             <tbody className="divide-y divide-gray-200 text-sm text-gray-700">
               {isLoading ? (
                 <tr>
-                  <td colSpan={4} className="py-8 text-center text-gray-500">Memuat data...</td>
+                  <td colSpan={8} className="py-8 text-center text-gray-500">Memuat data...</td>
                 </tr>
               ) : filteredData.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="py-8 text-center text-gray-500">Tidak ada data SPJ.</td>
+                  <td colSpan={8} className="py-8 text-center text-gray-500">Tidak ada data SPJ.</td>
                 </tr>
               ) : (
                 filteredData.map((item) => (
                   <tr key={item.id} className="hover:bg-gray-50 transition-colors">
                     <td className="py-3 px-5 font-medium text-gray-900">
                       <div>{item.kodePemesanan || `SPJ-${item.id}`}</div>
-                      <div className="text-xs text-gray-500">{item.tanggalOrder?.split('T')[0] || '-'}</div>
+                      <div className="text-xs text-gray-500">{formatDate(item.tanggalOrder)}</div>
                     </td>
                     <td className="py-3 px-5">
                       <div className="font-medium text-gray-800">{item.namaInstansi || `Instansi ID: ${item.namaInstansi}`}</div>
                       <div className="text-xs text-gray-500">PIC: {item.namaPIC || '-'}</div>
                     </td>
+                    <td className="py-3 px-5 font-medium text-gray-700">{item.kebutuhanSPJ}</td>
+                    <td className="py-3 px-5 text-gray-600">{formatDate(item.tglPrint)}</td>
+                    <td className="py-3 px-5 text-gray-600">{item.picPrint}</td>
+                    <td className="py-3 px-5 text-gray-600">{formatDate(item.tglPengiriman)}</td>
                     <td className="py-3 px-5">
-                      <Badge variant="outline" className={`font-medium ${item.statusPesanan === 'Selesai' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-orange-50 text-orange-700 border-orange-200'}`}>
-                        {item.statusPesanan || 'Diproses'}
-                      </Badge>
+                      <select 
+                        value={item.statusPesanan || ''} 
+                        onChange={(e) => updateMut.mutate({ id: item.id, payload: { statusPesanan: e.target.value } })}
+                        className={`text-sm font-medium border rounded px-2 py-1 outline-none ${item.statusPesanan === 'Selesai' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-orange-50 text-orange-700 border-orange-200'}`}
+                      >
+                        <option value="">Pilih Status</option>
+                        <option value="Diproses">Diproses</option>
+                        <option value="Selesai">Selesai</option>
+                      </select>
                     </td>
                     <td className="py-3 px-5 text-center flex items-center justify-center gap-1">
                       <button 

@@ -9,27 +9,27 @@ import { formatDate } from '@/utils/formatters'
 export default function PemesananList() {
   const navigate = useNavigate()
   const [searchTerm, setSearchTerm] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
 
   const { data: pemesananList, isLoading, refetch } = useQuery({
     queryKey: ['pemesanan'],
     queryFn: pemesananApi.getAll
   })
 
-  const updateMut = useMutation({
-    mutationFn: ({ id, payload }: { id: string, payload: Record<string, string> }) => pemesananApi.update(id, payload),
-    onSuccess: () => refetch(),
-    onError: (err: Error) => alert('Gagal update status: ' + err.message)
-  })
-
+  
   const deleteMut = useMutation({
     mutationFn: pemesananApi.delete,
     onSuccess: () => refetch(),
-    onError: (err: Error) => alert('Gagal menghapus: ' + err.message)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (err: any) => {
+      const msg = err.response?.data?.error || err.message;
+      alert('Gagal menghapus: ' + msg);
+    }
   })
 
-  const handleDelete = (id: string) => {
-    if (confirm('Yakin ingin menghapus pesanan ini beserta semua data Inaproc/Manual terkait?')) {
-      deleteMut.mutate(id)
+  const handleDelete = (id: string, kategori: string) => {
+    if (confirm('Yakin ingin menghapus pesanan ini beserta semua data terkait?')) {
+      deleteMut.mutate({ id, kategori })
     }
   }
 
@@ -39,6 +39,13 @@ export default function PemesananList() {
     item.namaPIC.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.kategori.toLowerCase().includes(searchTerm.toLowerCase())
   ) || []
+
+  // Pagination Logic
+  const itemsPerPage = 10
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const paginatedData = filteredData.slice(startIndex, startIndex + itemsPerPage)
+
 
   return (
     <DashboardLayout 
@@ -54,7 +61,7 @@ export default function PemesananList() {
               type="text" 
               placeholder="Cari Instansi, PIC, Kategori atau Kode..." 
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4871f7] focus:border-transparent"
             />
           </div>
@@ -72,14 +79,14 @@ export default function PemesananList() {
           <table className="w-full text-left border-collapse min-w-200">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-200 text-sm text-gray-500">
-                <th className="py-3 px-5 font-medium whitespace-nowrap">Kode Pemesanan</th>
-                  <th className="py-3 px-5 font-medium whitespace-nowrap">Tanggal PO</th>
-                <th className="py-3 px-5 font-medium">Instansi</th>
-                <th className="py-3 px-5 font-medium">Produk & Qty</th>
-                                <th className="py-3 px-5 font-medium">Status Pesanan</th>
-                <th className="py-3 px-5 font-medium">Status Odoo</th>
-                  <th className="py-3 px-5 font-medium whitespace-nowrap">Dibuat Pada</th>
-                  <th className="py-3 px-5 font-medium whitespace-nowrap">Terakhir Update</th>
+                <th className="py-3 px-5 font-medium whitespace-nowrap text-center">Kode Pemesanan</th>
+                  <th className="py-3 px-5 font-medium whitespace-nowrap text-center">Tanggal PO</th>
+                <th className="py-3 px-5 font-medium text-center">Instansi</th>
+                <th className="py-3 px-5 font-medium text-center">Produk & Qty</th>
+                                <th className="py-3 px-5 font-medium text-center">Status Pesanan</th>
+                <th className="py-3 px-5 font-medium text-center">Status Odoo</th>
+                  <th className="py-3 px-5 font-medium whitespace-nowrap text-center">Dibuat Pada</th>
+                  <th className="py-3 px-5 font-medium whitespace-nowrap text-center">Terakhir Update</th>
                 <th className="py-3 px-5 font-medium text-center">Aksi</th>
               </tr>
             </thead>
@@ -93,7 +100,7 @@ export default function PemesananList() {
                   <td colSpan={9} className="py-8 text-center text-gray-500">Tidak ada data pemesanan.</td>
                 </tr>
               ) : (
-                filteredData.map((item) => (
+                paginatedData.map((item) => (
                   <tr key={item.id} className="hover:bg-gray-50 transition-colors">
                     <td className="py-3 px-5 font-medium text-gray-900">{item.kodePemesanan}</td>
                       <td className="py-3 px-5">{formatDate(item.tanggalPesananPO)}</td>
@@ -101,36 +108,25 @@ export default function PemesananList() {
                     <td className="py-3 px-5">
                       <div className="flex flex-col">
                         <span className="font-medium text-gray-800">{item.kategori}</span>
-                        <span className="text-xs text-gray-500">Qty: {item.quantity || 1}</span>
                       </div>
                     </td>
                     
-                    <td className="py-3 px-5">
-                      <select 
-                        value={item.statusPesanan || ''} 
-                        onChange={(e) => updateMut.mutate({ id: item.id, payload: { statusPesanan: e.target.value } })}
-                        className={`text-sm font-medium border rounded px-2 py-1 outline-none ${item.statusPesanan === 'LUNAS' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-orange-50 text-orange-700 border-orange-200'}`}
-                      >
-                        <option value="">Pilih Status</option>
-                        <option value="Sudah Pembayaran">Sudah Pembayaran</option>
-                        <option value="Belum Pembayaran">Belum Pembayaran</option>
-                        <option value="Proses">Proses</option>
-                        <option value="Selesai">Selesai</option>
-                        <option value="LUNAS">LUNAS</option>
-                      </select>
+                    <td className="py-3 px-5 text-center">
+                        <span className={`inline-block px-2 py-1 rounded text-xs font-semibold capitalize ${
+                          item.statusPesanan === 'selesai' ? 'bg-green-100 text-green-800' : 
+                        item.statusPesanan === 'batal' ? 'bg-red-100 text-red-800' :
+                        item.statusPesanan === 'Dikirim' ? 'bg-blue-100 text-blue-800' :
+                        'bg-orange-100 text-orange-800'
+                      }`}>
+                        {item.statusPesanan || '-'}
+                      </span>
                     </td>
-                    <td className="py-3 px-5">
-                      <select 
-                        value={item.statusOdoo || ''} 
-                        onChange={(e) => updateMut.mutate({ id: item.id, payload: { statusOdoo: e.target.value } })}
-                        className="text-sm border rounded px-2 py-1 outline-none bg-gray-50 text-gray-700 border-gray-300"
-                      >
-                        <option value="">Pilih Status</option>
-                        <option value="Sudah Ada">Sudah Ada</option>
-                        <option value="Belum Ada">Belum Ada</option>
-                        <option value="Draft">Draft</option>
-                        <option value="Done">Done</option>
-                      </select>
+                    <td className="py-3 px-5 text-center">
+                        <span className={`inline-block px-2 py-1 rounded text-xs font-semibold capitalize ${
+                          item.statusOdoo === 'confirmed' ? 'bg-indigo-100 text-indigo-800' : 'bg-gray-100 text-gray-800'
+                      }`}>
+                        {item.statusOdoo || '-'}
+                      </span>
                     </td>
                     <td className="py-3 px-5">{formatDate(item.createdAt)}</td>
                       <td className="py-3 px-5">{formatDate(item.updatedAt)}</td>
@@ -150,7 +146,7 @@ export default function PemesananList() {
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
                       </button>
                       <button 
-                        onClick={() => handleDelete(item.id)}
+                        onClick={() => handleDelete(item.id, item.kategori)}
                         disabled={deleteMut.isPending}
                         className="text-red-600 hover:bg-red-50 p-1.5 rounded transition-colors disabled:opacity-50"
                         title="Hapus Data"
@@ -165,11 +161,84 @@ export default function PemesananList() {
           </table>
         </div>
         
-        <div className="p-4 border-t border-gray-200 flex items-center justify-between text-sm text-gray-500">
-          <span>Menampilkan {filteredData.length} data</span>
-        </div>
+
+        
+        {/* Pagination Controls */}
+        {totalPages > 0 && (
+          <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
+            <div className="flex flex-1 justify-between sm:hidden">
+              <button
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+              >
+                Previous
+              </button>
+              <button
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+            <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm text-gray-700">
+                  Menampilkan <span className="font-medium">{startIndex + 1}</span> hingga <span className="font-medium">{Math.min(startIndex + itemsPerPage, filteredData.length)}</span> dari <span className="font-medium">{filteredData.length}</span> hasil
+                </p>
+              </div>
+              <div>
+                <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                  <button
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
+                  >
+                    <span className="sr-only">Previous</span>
+                    <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fillRule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                  
+                  {/* Page Numbers */}
+                  {[...Array(totalPages)].map((_, idx) => {
+                    const page = idx + 1;
+                    // Tampilkan maksimal 5 halaman di sekitar current page
+                    if (page === 1 || page === totalPages || (page >= currentPage - 1 && page <= currentPage + 1)) {
+                      return (
+                        <button
+                          key={page}
+                          onClick={() => setCurrentPage(page)}
+                          className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${currentPage === page ? 'z-10 bg-teal-600 text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600' : 'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0'}`}
+                        >
+                          {page}
+                        </button>
+                      );
+                    } else if (page === currentPage - 2 || page === currentPage + 2) {
+                      return <span key={page} className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300">...</span>;
+                    }
+                    return null;
+                  })}
+
+                  <button
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                    className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
+                  >
+                    <span className="sr-only">Next</span>
+                    <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                </nav>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </DashboardLayout>
+
   )
 }
 

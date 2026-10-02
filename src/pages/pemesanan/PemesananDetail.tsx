@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import { useQuery } from '@tanstack/react-query'
 import { pemesananApi } from '@/api/pemesanan'
+import { masterApi } from '@/api/masterApi'
 import { ChevronLeft, Loader2 } from 'lucide-react'
 import { formatDate } from '@/utils/formatters'
 const ReadOnlyField = ({ label, value }: { label: string, value: string | number | undefined }) => (
@@ -15,17 +16,32 @@ export default function PemesananDetail() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ['pemesanan', id],
     queryFn: () => pemesananApi.getById(id!),
     enabled: !!id
   })
+
+  const { data: wilayahList = [] } = useQuery({ queryKey: ["master_wilayah"], queryFn: masterApi.getWilayah })
+  const { data: ekspedisiList = [] } = useQuery({ queryKey: ["master_ekspedisi"], queryFn: masterApi.getEkspedisi })
 
   if (isLoading) {
     return (
       <DashboardLayout title="Detail Pemesanan">
         <div className="flex justify-center items-center h-64">
           <Loader2 className="animate-spin text-blue-500 w-12 h-12" />
+        </div>
+      </DashboardLayout>
+    )
+  }
+
+  if (isError) {
+    return (
+      <DashboardLayout title="Detail Pemesanan">
+        <div className="bg-red-50 text-red-500 p-4 rounded-md overflow-auto">
+          <p className="font-bold">Terjadi Kesalahan API (getById):</p>
+          <pre className="text-sm mt-2 whitespace-pre-wrap">{JSON.stringify(error, null, 2)}</pre>
+          <p className="mt-2">Pesan: {error instanceof Error ? error.message : String(error)}</p>
         </div>
       </DashboardLayout>
     )
@@ -102,9 +118,9 @@ export default function PemesananDetail() {
               <>
                 <ReadOnlyField label="Tipe Timbangan Produk" value={data.tipeTimbangan} />
                 <ReadOnlyField label="Quantity" value={data.quantity} />
-                <ReadOnlyField label="Wilayah Pengiriman" value={data.wilayahPengiriman} />
+                <ReadOnlyField label="Wilayah Pengiriman" value={wilayahList.find(w => String(w.id) === String(data.wilayahPengiriman))?.namaWilayah || data.wilayahPengiriman} />
                 <ReadOnlyField label="Berat (KG)" value={data.berat} />
-                <ReadOnlyField label="Ekspedisi" value={data.ekspedisi} />
+                <ReadOnlyField label="Ekspedisi" value={ekspedisiList.find(e => String(e.id) === String(data.ekspedisi))?.namaEkspedisi || data.ekspedisi} />
                 <ReadOnlyField label="Nomor Resi" value={data.nomorResi} />
                 <ReadOnlyField label="Tanggal Barang Diterima" value={formatDate(data.tanggalBarangDiterima)} />
                 <div className="hidden md:block"></div> 
@@ -114,10 +130,10 @@ export default function PemesananDetail() {
                 <ReadOnlyField label="Harga PPN 11% + Ongkir" value={data.hargaPPN11Ongkir} />
                 <ReadOnlyField label="Total Harga + Ongkir" value={data.totalHargaOngkir} />
                 <ReadOnlyField label="Total Harga Jual" value={data.totalHargaJual} />
-                <ReadOnlyField label="Harga PPN 11% Ongkir Reseller" value={data.hargaPPN11OngkirReseller} />
+                <ReadOnlyField label="Harga Produk Reseller" value={data.hargaProdukReseller} />
                 <ReadOnlyField label="PPN 11% Reseller" value={data.ppn11Reseller} />
                 <ReadOnlyField label="Ongkir Reseller" value={data.ongkirReseller} />
-                <ReadOnlyField label="Harga PPN 11% + Ongkir" value={data.hargaPPN11PlusOngkirReseller} />
+                <ReadOnlyField label="Harga PPN 11% + Ongkir Reseller" value={data.hargaPPN11OngkirReseller} />
                 <ReadOnlyField label="Total Harga + Ongkir Reseller" value={data.totalHargaOngkirReseller} />
                 <ReadOnlyField label="Total Harga Reseller" value={data.totalHargaReseller} />
               </>
@@ -168,7 +184,9 @@ export default function PemesananDetail() {
             <ReadOnlyField label="Tanggal Uang Masuk" value={formatDate(data.tanggalUangMasuk)} />
             <ReadOnlyField label="Jumlah Uang Masuk" value={data.jumlahUangMasuk} />
             <ReadOnlyField label="Rekening Penerima" value={data.rekeningPenerima} />
-            <ReadOnlyField label="Kode Bayar" value={data.kodeBayar} />
+            {data.kategori !== 'IoT Manual' && (
+              <ReadOnlyField label="Kode Bayar" value={data.kodeBayar} />
+            )}
             <div className="md:col-span-2">
               <ReadOnlyField label="Keterangan" value={data.keterangan} />
             </div>

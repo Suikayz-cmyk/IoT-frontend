@@ -52,6 +52,10 @@ export default function SPJAdd() {
     if (editData) {
       setNamaInstansi(editData.namaInstansi)
       setNamaPIC(editData.namaPIC)
+      setNoTelpPIC(editData.noTelpPIC || '')
+      setAlamat(editData.alamat || '')
+      setKota(editData.kota || '')
+      setProvinsi(editData.provinsi || '')
       setTglPrint(editData.tglPrint || '')
       setTglUpdateList(editData.tglUpdateList || '')
       setTglTandaTangan(editData.tglSign || '')
@@ -65,35 +69,29 @@ export default function SPJAdd() {
     }
   }, [editData])
 
-  const handleInstansiChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleInstansiChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
     const val = e.target.value
     setNamaInstansi(val)
-    const found = instansiList.find(item => item.id === val)
+    const found = instansiList.find(item => item.namaInstansi.toLowerCase() === val.toLowerCase())
     if (found) {
-      setAlamat(found.alamat)
-      setKota(found.kotaKab)
-      setProvinsi(found.provinsi)
+      setAlamat(found.alamat || '')
+      setKota(found.kotaKab || '')
+      setProvinsi(found.provinsi || '')
       
-      const relatedPICs = picList.filter(p => p.instansiId === found.id)
+      const relatedPICs = picList.filter(p => String(p.instansiId) === String(found.id))
       if (relatedPICs.length > 0) {
-        setNamaPIC(relatedPICs[0].id)
-        setNoTelpPIC(relatedPICs[0].noTelp)
-      } else {
-        setNamaPIC(''); setNoTelpPIC('');
+        setNamaPIC(relatedPICs[0].namaPIC)
+        setNoTelpPIC(relatedPICs[0].noTelp || '')
       }
-    } else {
-      setNamaPIC(''); setNoTelpPIC(''); setAlamat(''); setKota(''); setProvinsi('');
     }
   }
 
-  const handlePicChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handlePicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value
     setNamaPIC(val)
-    const found = picList.find(item => item.id === val)
+    const found = picList.find(item => item.namaPIC.toLowerCase() === val.toLowerCase())
     if (found) {
-      setNoTelpPIC(found.noTelp)
-    } else {
-      setNoTelpPIC('')
+      setNoTelpPIC(found.noTelp || '')
     }
   }
 
@@ -110,9 +108,12 @@ export default function SPJAdd() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    const foundInstansi = instansiList.find(item => item.namaInstansi.toLowerCase() === namaInstansi.toLowerCase())
+    const foundPic = picList.find(item => item.namaPIC.toLowerCase() === namaPIC.toLowerCase())
+    
     saveMutation.mutate({
-      namaInstansi,
-      namaPIC,
+      namaInstansi: foundInstansi ? String(foundInstansi.id) : null,
+      namaPIC: foundPic ? String(foundPic.id) : null,
       tglPrint,
       tglUpdateList,
       tglSign: tglTandaTangan,
@@ -163,19 +164,26 @@ export default function SPJAdd() {
           <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-700">Nama Instansi Pemesan <span className="text-red-500">*</span></label>
-              <select value={namaInstansi} onChange={handleInstansiChange} required className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0f766e]">
-                <option value="" disabled>Pilih Instansi Pemesan</option>
-                {instansiList.map(item => <option key={item.id} value={item.id}>{item.namaInstansi}</option>)}
+              <select 
+                value={namaInstansi} 
+                onChange={handleInstansiChange} 
+                required 
+                className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0f766e]"
+              >
+                <option value="">Pilih Instansi</option>
+                {instansiList.map(item => (
+                  <option key={item.id} value={item.namaInstansi}>
+                    {item.namaInstansi}
+                  </option>
+                ))}
               </select>
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-700">Nama PIC <span className="text-red-500">*</span></label>
-              <select value={namaPIC} onChange={handlePicChange} className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0f766e]">
-                <option value="" disabled>Pilih PIC</option>
-                {picList.filter(p => !namaInstansi || p.instansiId === namaInstansi).map(item => (
-                  <option key={item.id} value={item.id}>{item.namaPIC}</option>
-                ))}
-              </select>
+              <input type="text" list="pic-list" value={namaPIC} onChange={handlePicChange} className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0f766e]" placeholder="Ketik atau pilih PIC" />
+              <datalist id="pic-list">
+                {picList.map(item => <option key={item.id} value={item.namaPIC} />)}
+              </datalist>
               <p className="text-xs text-gray-500">Terisi otomatis dari hasil cek, bisa diubah</p>
             </div>
             <div className="space-y-1.5">

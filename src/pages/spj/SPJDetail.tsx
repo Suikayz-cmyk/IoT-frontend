@@ -1,7 +1,10 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import { ChevronLeft } from 'lucide-react'
 import { formatDate } from '@/utils/formatters'
+import { useQuery } from '@tanstack/react-query'
+import { spjApi } from '@/api/spj'
+
 const ReadOnlyField = ({ label, value, helperText }: { label: string, value: string | number | undefined, helperText?: string }) => (
   <div className="space-y-1.5">
     <label className="text-sm font-medium text-gray-700">{label}</label>
@@ -12,27 +15,16 @@ const ReadOnlyField = ({ label, value, helperText }: { label: string, value: str
 
 export default function SPJDetail() {
   const navigate = useNavigate()
+  const { id } = useParams()
 
-  // Dummy data
-  const data = {
-    kategori: 'SPJ',
-    namaInstansi: 'Dinkes B',
-    namaPIC: 'Tasya Kamila',
-    noTelpPIC: '08129008624',
-    alamat: 'Jl. TB Simatupang No.04',
-    kota: 'Kota Jakarta Selatan',
-    provinsi: 'DKI Jakarta',
-    tglPrint: '2026-09-21',
-    tglUpdateList: '2026-09-21',
-    tglTandaTangan: '2026-09-22',
-    tglPengiriman: '2026-09-23',
-    tglParaf: '2026-09-21',
-    kebutuhanSPJ: 'Laporan Keuangan',
-    jumlahRangkap: 2,
-    jenisKertas: 'A4',
-    jenisFile: 'PDF',
-    picPrint: 'Aryo'
-  }
+  const { data: data, isLoading, isError } = useQuery({
+    queryKey: ['spj', id],
+    queryFn: () => spjApi.findById(id as string),
+    enabled: !!id
+  })
+
+  if (isLoading) return <DashboardLayout title="Detail SPJ"><div className="p-4">Loading...</div></DashboardLayout>;
+  if (isError || !data) return <DashboardLayout title="Detail SPJ"><div className="p-4">Terjadi kesalahan atau data tidak ditemukan.</div></DashboardLayout>;
 
   return (
     <DashboardLayout title="">

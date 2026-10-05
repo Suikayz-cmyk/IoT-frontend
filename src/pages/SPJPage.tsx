@@ -18,6 +18,12 @@ export default function SPJPage() {
   const updateMut = useMutation({
     mutationFn: ({ id, payload }: { id: string, payload: Record<string, string> }) => spjApi.update(id, payload),
     onSuccess: () => refetch(),
+    onError: (err: Error) => alert('Gagal update data: ' + err.message)
+  })
+
+  const updateStatusMut = useMutation({
+    mutationFn: ({ id, status }: { id: string, status: string }) => spjApi.updateStatus(id, status),
+    onSuccess: () => refetch(),
     onError: (err: Error) => alert('Gagal update status: ' + err.message)
   })
 
@@ -107,13 +113,17 @@ export default function SPJPage() {
                     <td className="py-3 px-5 text-gray-600">{formatDate(item.tglPengiriman)}</td>
                     <td className="py-3 px-5">
                       <select 
-                        value={item.statusPesanan || ''} 
-                        onChange={(e) => updateMut.mutate({ id: item.id, payload: { statusPesanan: e.target.value } })}
-                        className={`text-sm font-medium border rounded px-2 py-1 outline-none ${item.statusPesanan === 'Selesai' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-orange-50 text-orange-700 border-orange-200'}`}
+                        value={(item.statusPesanan || '').toLowerCase()} 
+                        onChange={(e) => {
+                          if (window.confirm(`Yakin ingin mengubah status SPJ menjadi '${e.target.value}'?`)) {
+                            updateStatusMut.mutate({ id: item.id, status: e.target.value })
+                          }
+                        }}
+                        className={`text-sm font-medium border rounded px-2 py-1 outline-none ${(item.statusPesanan || '').toLowerCase() === 'selesai' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-orange-50 text-orange-700 border-orange-200'}`}
                       >
                         <option value="">Pilih Status</option>
-                        <option value="Diproses">Diproses</option>
-                        <option value="Selesai">Selesai</option>
+                        <option value="diproses">Diproses</option>
+                        <option value="selesai">Selesai</option>
                       </select>
                     </td>
                     <td className="py-3 px-5 text-center flex items-center justify-center gap-1">

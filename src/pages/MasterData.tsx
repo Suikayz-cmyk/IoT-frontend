@@ -44,23 +44,30 @@ export default function MasterData() {
     closeModal()
   }
 
+  // Tampilkan pesan error dari backend (sebelumnya kegagalan tidak terlihat sama sekali)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const onError = (err: any) => {
+    const msg = err?.response?.data?.message || err?.response?.data?.error || err?.message
+    alert('Gagal menyimpan data: ' + msg)
+  }
+
   // Add Mutations
-  const addInstansiMut = useMutation({ mutationFn: masterApi.addInstansi, onSuccess: () => invalidate('master_instansi') })
-  const addPICMut = useMutation({ mutationFn: masterApi.addPIC, onSuccess: () => invalidate('master_pic') })
-    const addEkspedisiMut = useMutation({ mutationFn: masterApi.addEkspedisi, onSuccess: () => invalidate('master_ekspedisi') })
-  const addWilayahMut = useMutation({ mutationFn: masterApi.addWilayah, onSuccess: () => invalidate('master_wilayah') })
+  const addInstansiMut = useMutation({ mutationFn: masterApi.addInstansi, onSuccess: () => invalidate('master_instansi'), onError })
+  const addPICMut = useMutation({ mutationFn: masterApi.addPIC, onSuccess: () => invalidate('master_pic'), onError })
+  const addEkspedisiMut = useMutation({ mutationFn: masterApi.addEkspedisi, onSuccess: () => invalidate('master_ekspedisi'), onError })
+  const addWilayahMut = useMutation({ mutationFn: masterApi.addWilayah, onSuccess: () => invalidate('master_wilayah'), onError })
 
   // Update Mutations
-  const updInstansiMut = useMutation({ mutationFn: masterApi.updateInstansi, onSuccess: () => invalidate('master_instansi') })
-  const updPICMut = useMutation({ mutationFn: masterApi.updatePIC, onSuccess: () => invalidate('master_pic') })
-    const updEkspedisiMut = useMutation({ mutationFn: masterApi.updateEkspedisi, onSuccess: () => invalidate('master_ekspedisi') })
-  const updWilayahMut = useMutation({ mutationFn: masterApi.updateWilayah, onSuccess: () => invalidate('master_wilayah') })
+  const updInstansiMut = useMutation({ mutationFn: masterApi.updateInstansi, onSuccess: () => invalidate('master_instansi'), onError })
+  const updPICMut = useMutation({ mutationFn: masterApi.updatePIC, onSuccess: () => invalidate('master_pic'), onError })
+  const updEkspedisiMut = useMutation({ mutationFn: masterApi.updateEkspedisi, onSuccess: () => invalidate('master_ekspedisi'), onError })
+  const updWilayahMut = useMutation({ mutationFn: masterApi.updateWilayah, onSuccess: () => invalidate('master_wilayah'), onError })
 
   // Delete Mutations
-  const delInstansiMut = useMutation({ mutationFn: masterApi.deleteInstansi, onSuccess: () => queryClient.invalidateQueries({ queryKey: ['master_instansi'] }) })
-  const delPICMut = useMutation({ mutationFn: masterApi.deletePIC, onSuccess: () => queryClient.invalidateQueries({ queryKey: ['master_pic'] }) })
-    const delEkspedisiMut = useMutation({ mutationFn: masterApi.deleteEkspedisi, onSuccess: () => queryClient.invalidateQueries({ queryKey: ['master_ekspedisi'] }) })
-  const delWilayahMut = useMutation({ mutationFn: masterApi.deleteWilayah, onSuccess: () => queryClient.invalidateQueries({ queryKey: ['master_wilayah'] }) })
+  const delInstansiMut = useMutation({ mutationFn: masterApi.deleteInstansi, onSuccess: () => queryClient.invalidateQueries({ queryKey: ['master_instansi'] }), onError })
+  const delPICMut = useMutation({ mutationFn: masterApi.deletePIC, onSuccess: () => queryClient.invalidateQueries({ queryKey: ['master_pic'] }), onError })
+  const delEkspedisiMut = useMutation({ mutationFn: masterApi.deleteEkspedisi, onSuccess: () => queryClient.invalidateQueries({ queryKey: ['master_ekspedisi'] }), onError })
+  const delWilayahMut = useMutation({ mutationFn: masterApi.deleteWilayah, onSuccess: () => queryClient.invalidateQueries({ queryKey: ['master_wilayah'] }), onError })
 
   const resetForms = () => {
     setEditId(null)

@@ -179,7 +179,7 @@ export const masterApi = {
   addEkspedisi: async (data: Omit<MasterEkspedisi, 'id'>) => {
     const payload = {
       nama_ekspedisi: data.namaEkspedisi,
-      status: 1
+      status: '1' // backend: MasterEkspedisi.Status bertipe string
     };
     const res = await axios.post('/api/ekspedisi', payload, { headers: getAuthHeaders() });
     return res.data;
@@ -187,7 +187,7 @@ export const masterApi = {
   updateEkspedisi: async (data: MasterEkspedisi) => {
     const payload = {
       nama_ekspedisi: data.namaEkspedisi,
-      status: 1
+      status: '1' // backend: MasterEkspedisi.Status bertipe string
     };
     const res = await axios.put(`/api/ekspedisi/${data.id}`, payload, { headers: getAuthHeaders() });
     return res.data;

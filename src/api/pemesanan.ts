@@ -1,4 +1,4 @@
-﻿/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from 'axios'
 import type { BackendResponse, Order } from '@/types/backend';
 
@@ -76,7 +76,10 @@ const getAuthHeaders = () => {
 }
 
 const parseRupiah = (val: any): number => {
-  if (!val) return 0;
+  if (val === undefined || val === null || val === '') return 0;
+  if (typeof val === 'number') return val;
+  if (typeof val === 'string' && !isNaN(Number(val)) && val.trim() !== '') return Number(val);
+  
   return parseFloat(String(val).replace(/\./g, "").replace(/,/g, ".").replace(/[^0-9.-]+/g, "")) || 0;
 }
 
@@ -218,6 +221,13 @@ const buildPayloadAndEndpoint = async (payload: Partial<PemesananData>) => {
 };
 
 export const pemesananApi = {
+  exportExcel: async (): Promise<Blob> => {
+    const res = await axios.get('/api/orders/export', { 
+      headers: getAuthHeaders(),
+      responseType: 'blob'
+    })
+    return res.data
+  },
   getAll: async (): Promise<PemesananData[]> => {
     const res = await axios.get<BackendResponse<Order[]>>('/api/orders', { headers: getAuthHeaders() })
     const orders = res.data.data || res.data || []
@@ -267,24 +277,31 @@ export const pemesananApi = {
   },
 
   getById: async (id: string): Promise<PemesananData> => {
-    // 1. Fetch from list to get category because backend GET /api/orders/:id panics
-    const listRes = await axios.get<BackendResponse<any>>(`/api/orders`, { headers: getAuthHeaders() })
-    const listOrders = listRes.data.data || listRes.data || []
-    const baseOrder = listOrders.find((o: any) => String(o.id) === String(id))
-    if (!baseOrder) throw new Error("Pesanan tidak ditemukan")
+    // 1. Gunakan Promise.any untuk mencoba semua endpoint spesifik secara bersamaan
+    // Ini jauh lebih cepat daripada mengunduh SELURUH pesanan (GET /api/orders) hanya untuk mengecek kategori.
+    // GET /api/orders/:id di backend saat ini error/panic karena salah Preload("Inaproc").
+    const endpoints = [
+      `/api/iot-inaproc/${id}`,
+      `/api/timbangan/${id}`,
+      `/api/iot-manual/${id}`
+    ];
 
-    const katOrder = baseOrder.kategori_order || ""
-    const jenisOrder = baseOrder.jenis_order || ""
-    const isTimbangan = katOrder.includes("timbangan") || katOrder.includes("rcw")
-    const isIoTManual = katOrder === "iot_manual" || (!isTimbangan && jenisOrder === "manual")
+    const fetchEndpoint = async (url: string) => {
+      const res = await axios.get<BackendResponse<any>>(url, { headers: getAuthHeaders() });
+      if (!res.data || (!res.data.data && res.data.success === false)) {
+        throw new Error(`Not found in ${url}`);
+      }
+      return res;
+    };
 
-    let endpoint = `/api/iot-inaproc/${id}`
-    if (isTimbangan) endpoint = `/api/timbangan/${id}`
-    else if (isIoTManual) endpoint = `/api/iot-manual/${id}`
+    let res;
+    try {
+      res = await Promise.any(endpoints.map(url => fetchEndpoint(url)));
+    } catch (_error) {
+      throw new Error("Pesanan tidak ditemukan di kategori mana pun", { cause: _error });
+    }
 
-    // 2. Fetch from specific endpoint to get nested relations
-    const res = await axios.get<BackendResponse<any>>(endpoint, { headers: getAuthHeaders() })
-    const order = res.data.data || res.data
+    const order = res.data.data || res.data;
 
     const pricing = order.pricing || {};
     const procurement = order.procurement || {};
@@ -325,10 +342,10 @@ export const pemesananApi = {
       statusPesanan: order.status || "",
       statusOdoo: order.status_odoo || "",
       nsfp: order.nsfp || "",
-      nomorBAST: order.no_bast || baseOrder.no_bast || "",
-      tanggalBAST: order.tanggal_bast || baseOrder.tanggal_bast || "",
-      kodeBayar: (order.kode_bayar || baseOrder.kode_bayar) ? String(order.kode_bayar || baseOrder.kode_bayar).trim().toUpperCase() : "",
-      nomorInvoiceInaproc: order.no_invoice_inaproc || baseOrder.no_invoice_inaproc || "",
+      nomorBAST: order.no_bast || "",
+      tanggalBAST: order.tanggal_bast || "",
+      kodeBayar: order.kode_bayar ? String(order.kode_bayar).trim().toUpperCase() : "",
+      nomorInvoiceInaproc: order.no_invoice_inaproc || "",
       keterangan: order.keterangan ? (String(order.keterangan).includes(' - ') ? String(order.keterangan).split(' - ')[1].trim() : order.keterangan) : '',
       tanggalPesananPO: order.tanggal_po || order.tanggal_order || "",
       nomorPOKUT: procurement.no_po_kut || order.no_po || "",
@@ -390,6 +407,19 @@ export const pemesananApi = {
     return { id, ...payload } as any;
   },
 
+  updateOrderStatus: async (id: string, field: 'status' | 'status_odoo', value: string): Promise<void> => {
+    const headers = getAuthHeaders();
+    const ordersRes = await axios.get('/api/orders', { headers });
+    const orders = ordersRes.data.data || [];
+    const fullOrder = orders.find((o: any) => String(o.id) === String(id));
+    if (!fullOrder) throw new Error("Order not found");
+    
+    if (field === 'status') fullOrder.status = value;
+    if (field === 'status_odoo') fullOrder.status_odoo = value;
+    
+    await axios.put(`/api/orders/${id}`, fullOrder, { headers });
+  },
+
   delete: async ({ id, kategori }: { id: string, kategori: string }): Promise<void> => {
     let endpoint = "/api/timbangan";
     if (kategori === "IoT Inaproc") {
@@ -400,3 +430,4 @@ export const pemesananApi = {
     await axios.delete(`${endpoint}/${id}`, { headers: getAuthHeaders() });
   }
 }
+

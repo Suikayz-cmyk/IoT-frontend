@@ -1,16 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+﻿/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useFormContext } from 'react-hook-form';
 import type { FormValues } from '../types';
 
 interface FormPemesanProps {
   instansiList: any[];
-  picList: any[];
 }
 
-export default function FormPemesan({ instansiList, picList }: FormPemesanProps) {
+export default function FormPemesan({ instansiList }: FormPemesanProps) {
   const { register, watch } = useFormContext<FormValues>();
   const watchKategori = watch("kategori");
-  const watchInstansi = watch("instansi");
   
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -22,28 +20,18 @@ export default function FormPemesan({ instansiList, picList }: FormPemesanProps)
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700">Nama Instansi Pemesan <span className="text-red-500">*</span></label>
                   <select 
-                    
                     {...register("instansi")}
                     className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0f766e] bg-white"
                     required
                   >
                     <option value="" disabled>Pilih Instansi Pemesan</option>
-                    {instansiList.map(item => <option key={item.id} value={item.id}>{item.namaInstansi}</option>)}
+                    {instansiList.map(item => <option key={item.id} value={item.namaInstansi}>{item.namaInstansi}</option>)}
                   </select>
                 </div>
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700">Nama PIC <span className="text-red-500">*</span></label>
-                  <select 
-                    {...register("pic")} 
-                    className="w-full border border-gray-300 bg-white rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0f766e]"
-                    required
-                  >
-                    <option value="" disabled>Pilih PIC</option>
-                    {/* Filter PIC by selected instansi ID */}
-                    {picList.filter((p: any) => !watchInstansi || String(p.instansiId) === String(watchInstansi)).map((item: any) => (
-                      <option key={item.id} value={item.id}>{item.namaPIC}</option>
-                    ))}
-                  </select>
+                  <input type="text" {...register("pic")} className="w-full border border-gray-300 bg-white rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0f766e]" />
+                  <p className="text-xs text-gray-500">Terisi otomatis dari instansi, bebas diubah</p>
                 </div>
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700">Nomor Telepon PIC <span className="text-red-500">*</span></label>

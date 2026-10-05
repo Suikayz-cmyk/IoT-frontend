@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useFormContext } from 'react-hook-form';
 import type { FormValues } from '../types';
 import CustomDatePicker from '@/components/ui/CustomDatePicker';
 
 
 
-export default function FormDetailKategori() {
+export default function FormDetailKategori({ wilayahList = [], ekspedisiList = [] }: { wilayahList?: any[], ekspedisiList?: any[] }) {
   const { register, watch } = useFormContext<FormValues>();
   const watchKategori = watch("kategori");
   const isTimbangan = watchKategori === 'Timbangan Inaproc' || watchKategori === 'Timbangan Manual' || watchKategori?.startsWith('RCW');
@@ -62,8 +63,9 @@ export default function FormDetailKategori() {
                       <label className="text-sm font-medium text-gray-700">Wilayah Pengiriman <span className="text-red-500">*</span></label>
                       <select {...register("wilayahPengiriman")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
                         <option value="">Pilih Wilayah</option>
-                        <option value="Jawa">Jawa</option>
-                        <option value="Luar Jawa">Luar Jawa</option>
+                        {wilayahList.map(item => (
+                          <option key={item.id} value={item.id}>{item.namaWilayah}</option>
+                        ))}
                       </select>
                     </div>
                     <div className="space-y-1">
@@ -74,8 +76,9 @@ export default function FormDetailKategori() {
                       <label className="text-sm font-medium text-gray-700">Ekspedisi</label>
                       <select {...register("ekspedisi")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
                         <option value="">Pilih Ekspedisi</option>
-                        <option value="JNE">JNE</option>
-                        <option value="JNT">JNT</option>
+                        {ekspedisiList.map(item => (
+                          <option key={item.id} value={item.id}>{item.namaEkspedisi}</option>
+                        ))}
                       </select>
                     </div>
                     <div className="space-y-1">
@@ -114,8 +117,8 @@ export default function FormDetailKategori() {
                       <input type="text" placeholder="Rp" {...register("totalHargaJual")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-sm font-medium text-gray-700">Harga PPN 11% Ongkir Reseller <span className="text-red-500">*</span></label>
-                      <input type="text" placeholder="Rp" {...register("hargaPPN11OngkirReseller")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+                      <label className="text-sm font-medium text-gray-700">Harga Produk Reseller <span className="text-red-500">*</span></label>
+                      <input type="text" placeholder="Rp" {...register("hargaProdukReseller")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
                     </div>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">PPN 11% Reseller <span className="text-red-500">*</span></label>
@@ -126,10 +129,9 @@ export default function FormDetailKategori() {
                       <input type="text" placeholder="Rp" {...register("ongkirReseller")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-sm font-medium text-gray-700">Harga PPN 11% + Ongkir <span className="text-red-500">*</span></label>
-                      <input type="text" placeholder="Rp" {...register("hargaPPN11PlusOngkirReseller")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+                      <label className="text-sm font-medium text-gray-700">Harga PPN 11% + Ongkir Reseller <span className="text-red-500">*</span></label>
+                      <input type="text" placeholder="Rp" {...register("hargaPPN11OngkirReseller")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
                     </div>
-                    
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">Total Harga + Ongkir Reseller <span className="text-red-500">*</span></label>
                       <input type="text" placeholder="Rp" {...register("totalHargaOngkirReseller")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />

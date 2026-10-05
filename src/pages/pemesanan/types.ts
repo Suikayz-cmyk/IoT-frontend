@@ -1,4 +1,4 @@
-import * as z from 'zod'
+﻿import * as z from 'zod'
 
 export const formSchema = z.object({
   kategori: z.string().min(1, "Pilih Kategori"),
@@ -27,10 +27,10 @@ export const formSchema = z.object({
   hargaPPN11Ongkir: z.string().optional(),
   totalHargaOngkir: z.string().optional(),
   totalHargaJual: z.string().optional(),
-  hargaPPN11OngkirReseller: z.string().optional(),
+  hargaProdukReseller: z.string().optional(),
   ppn11Reseller: z.string().optional(),
   ongkirReseller: z.string().optional(),
-  hargaPPN11PlusOngkirReseller: z.string().optional(),
+  hargaPPN11OngkirReseller: z.string().optional(),
   totalHargaOngkirReseller: z.string().optional(),
   nomorSuratPenawaranHarga: z.string().optional(),
   bulanPengirimanSPH: z.string().optional(),
@@ -51,10 +51,8 @@ export const formSchema = z.object({
   nomorFormulirPembelian: z.string().optional(),
   nomorFormulirBerlangganan: z.string().optional(),
   nomorKontrakBerlangganan: z.string().optional(),
-
   totalHargaReseller: z.string().optional(),
   statusPesanan: z.string().optional(),
   statusOdoo: z.string().optional(),
-
 });
 export type FormValues = z.infer<typeof formSchema>;

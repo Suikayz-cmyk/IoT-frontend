@@ -19,11 +19,33 @@ export default function PemesananList() {
   
   const deleteMut = useMutation({
     mutationFn: pemesananApi.delete,
-    onSuccess: () => refetch(),
+    onSuccess: () => { refetch(); alert('Data pesanan berhasil dihapus!'); },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (err: any) => {
       const msg = err.response?.data?.error || err.message;
       alert('Gagal menghapus: ' + msg);
+    }
+  })
+
+  const updateStatusMut = useMutation({
+    mutationFn: (data: { id: string, field: 'status' | 'status_odoo', value: string }) => pemesananApi.updateOrderStatus(data.id, data.field, data.value),
+    onSuccess: () => refetch(),
+    onError: (err: Error) => alert('Gagal update status: ' + err.message)
+  })
+
+    const exportMut = useMutation({
+    mutationFn: pemesananApi.exportExcel,
+    onSuccess: (blob) => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const now = new Date();
+      const pad = (n: number) => n.toString().padStart(2, '0');
+      const formattedDate = `${pad(now.getDate())}-${pad(now.getMonth() + 1)}-${now.getFullYear()}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
+      a.download = `data-pesanan-${formattedDate}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
     }
   })
 
@@ -47,10 +69,31 @@ export default function PemesananList() {
   const paginatedData = filteredData.slice(startIndex, startIndex + itemsPerPage)
 
 
+  const getStatusPesananStyle = (status: string | undefined | null) => {
+    if (!status) return 'bg-gray-100 text-gray-800 border border-gray-200';
+    const s = status.toLowerCase();
+    if (s === 'baru') return 'bg-sky-50 text-sky-700 border border-sky-200';
+    if (s === 'pending') return 'bg-amber-50 text-amber-700 border border-amber-200';
+    if (s === 'diproses' || s === 'proses') return 'bg-orange-50 text-orange-700 border border-orange-200';
+    if (s === 'dikirim') return 'bg-blue-50 text-blue-700 border border-blue-200';
+    if (s === 'selesai') return 'bg-emerald-50 text-emerald-800 border border-emerald-200';
+    if (s === 'batal') return 'bg-rose-50 text-rose-700 border border-rose-200';
+    return 'bg-gray-100 text-gray-800 border border-gray-200';
+  };
+
+  const getStatusOdooStyle = (status: string | undefined | null) => {
+    if (!status) return 'bg-gray-100 text-gray-800 border border-gray-200';
+    const s = status.toLowerCase();
+    if (s === 'confirmed') return 'bg-violet-50 text-violet-700 border border-violet-200';
+    if (s === 'draft') return 'bg-slate-100 text-slate-700 border border-slate-200';
+    return 'bg-gray-100 text-gray-800 border border-gray-200';
+  };
+
   return (
     <DashboardLayout 
       title="Data Pemesanan" 
-      onExport={() => alert('Fitur Export dalam pengembangan')}
+      onExport={() => exportMut.mutate()}
+      isExporting={exportMut.isPending}
     >
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
 
@@ -112,21 +155,38 @@ export default function PemesananList() {
                     </td>
                     
                     <td className="py-3 px-5 text-center">
-                        <span className={`inline-block px-2 py-1 rounded text-xs font-semibold capitalize ${
-                          item.statusPesanan === 'selesai' ? 'bg-green-100 text-green-800' : 
-                        item.statusPesanan === 'batal' ? 'bg-red-100 text-red-800' :
-                        item.statusPesanan === 'Dikirim' ? 'bg-blue-100 text-blue-800' :
-                        'bg-orange-100 text-orange-800'
-                      }`}>
-                        {item.statusPesanan || '-'}
-                      </span>
+                      <select
+                        value={(item.statusPesanan || '').toLowerCase()}
+                        onChange={(e) => {
+                          if (window.confirm(`Yakin ingin mengubah status pesanan menjadi '${e.target.value}'?`)) {
+                            updateStatusMut.mutate({ id: item.id as string, field: 'status', value: e.target.value })
+                          }
+                        }}
+                        className={`inline-block px-2 py-1 rounded text-xs font-semibold capitalize focus:outline-none ${getStatusPesananStyle(item.statusPesanan)}`}
+                      >
+                        <option value="">Pilih Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="baru">Baru</option>
+                        <option value="diproses">Diproses</option>
+                        <option value="dikirim">Dikirim</option>
+                        <option value="selesai">Selesai</option>
+                        <option value="batal">Batal</option>
+                      </select>
                     </td>
                     <td className="py-3 px-5 text-center">
-                        <span className={`inline-block px-2 py-1 rounded text-xs font-semibold capitalize ${
-                          item.statusOdoo === 'confirmed' ? 'bg-indigo-100 text-indigo-800' : 'bg-gray-100 text-gray-800'
-                      }`}>
-                        {item.statusOdoo || '-'}
-                      </span>
+                      <select
+                        value={(item.statusOdoo || '').toLowerCase()}
+                        onChange={(e) => {
+                          if (window.confirm(`Yakin ingin mengubah status Odoo menjadi '${e.target.value}'?`)) {
+                            updateStatusMut.mutate({ id: item.id as string, field: 'status_odoo', value: e.target.value })
+                          }
+                        }}
+                        className={`inline-block px-2 py-1 rounded text-xs font-semibold capitalize focus:outline-none ${getStatusOdooStyle(item.statusOdoo)}`}
+                      >
+                        <option value="">Pilih Status</option>
+                        <option value="draft">Draft</option>
+                        <option value="confirmed">Confirmed</option>
+                      </select>
                     </td>
                     <td className="py-3 px-5">{formatDate(item.createdAt)}</td>
                       <td className="py-3 px-5">{formatDate(item.updatedAt)}</td>

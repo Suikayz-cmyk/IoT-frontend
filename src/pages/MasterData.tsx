@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import DashboardLayout from '@/components/layout/DashboardLayout'
@@ -133,8 +134,7 @@ export default function MasterData() {
         
         <div className="flex border-b border-gray-200 overflow-x-auto">
           {tabs.map(tab => (
-            <button
-              key={tab.id}
+            <Button variant="outline" key={tab.id}
               onClick={() => { setActiveTab(tab.id); resetForms(); }}
               className={`px-6 py-4 text-sm font-semibold whitespace-nowrap transition-colors relative ${
                 activeTab === tab.id ? 'text-[#0f766e]' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
@@ -144,16 +144,16 @@ export default function MasterData() {
               {activeTab === tab.id && (
                 <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#0f766e]"></div>
               )}
-            </button>
+            </Button>
           ))}
         </div>
 
         <div className="bg-white border border-gray-200 rounded-lg overflow-hidden flex flex-col">
           <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50/50">
             <h2 className="text-base font-semibold text-gray-800">Daftar {tabs.find(t => t.id === activeTab)?.label}</h2>
-            <button onClick={openAddModal} className="bg-[#0f766e] text-white px-4 py-2 rounded-md font-medium text-sm flex items-center gap-2 hover:bg-[#115e59] transition-colors">
+            <Button variant="default" onClick={openAddModal}>
               <Plus size={16} /> Tambah {tabs.find(t => t.id === activeTab)?.label.replace('Master ', '')}
-            </button>
+            </Button>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm text-gray-600">
@@ -180,8 +180,8 @@ export default function MasterData() {
                     <td className="px-4 py-3 text-xs">{item.kotaKab}</td>
                     <td className="px-4 py-3 text-xs">{item.provinsi}</td>
                     <td className="px-4 py-3 text-center flex items-center justify-center gap-2">
-                      <button onClick={() => openEditModal(item)} className="text-blue-500 hover:bg-blue-50 p-1.5 rounded"><Edit2 size={16}/></button>
-                      <button onClick={() => { if(confirm('Yakin ingin menghapus?')) delInstansiMut.mutate(item.id) }} className="text-red-500 hover:bg-red-50 p-1.5 rounded"><Trash2 size={16}/></button>
+                      <Button variant="outline" onClick={() => openEditModal(item)} className="text-blue-500 hover:bg-blue-50 p-1.5 rounded"><Edit2 size={16}/></Button>
+                      <Button variant="outline" onClick={() => { if(confirm('Yakin ingin menghapus?')) delInstansiMut.mutate(item.id) }} className="text-red-500 hover:bg-red-50 p-1.5 rounded"><Trash2 size={16}/></Button>
                     </td>
                   </tr>
                 ))}
@@ -196,8 +196,8 @@ export default function MasterData() {
                     <td className="px-4 py-3 text-xs text-gray-600">{item.email || '-'}</td>
                     <td className="px-4 py-3 font-mono text-xs text-gray-600">{item.noTelp || '-'}</td>
                     <td className="px-4 py-3 text-center flex items-center justify-center gap-2">
-                      <button onClick={() => openEditModal(item)} className="text-blue-500 hover:bg-blue-50 p-1.5 rounded"><Edit2 size={16}/></button>
-                      <button onClick={() => { if(confirm('Yakin ingin menghapus?')) delPICMut.mutate(item.id) }} className="text-red-500 hover:bg-red-50 p-1.5 rounded"><Trash2 size={16}/></button>
+                      <Button variant="outline" onClick={() => openEditModal(item)} className="text-blue-500 hover:bg-blue-50 p-1.5 rounded"><Edit2 size={16}/></Button>
+                      <Button variant="outline" onClick={() => { if(confirm('Yakin ingin menghapus?')) delPICMut.mutate(item.id) }} className="text-red-500 hover:bg-red-50 p-1.5 rounded"><Trash2 size={16}/></Button>
                     </td>
                   </tr>
                 ))}
@@ -208,8 +208,8 @@ export default function MasterData() {
                     <td className="px-4 py-3 text-center">{idx + 1}</td>
                     <td className="px-4 py-3 font-medium text-gray-800">{item.namaEkspedisi}</td>
                     <td className="px-4 py-3 text-center flex items-center justify-center gap-2">
-                      <button onClick={() => openEditModal(item)} className="text-blue-500 hover:bg-blue-50 p-1.5 rounded"><Edit2 size={16}/></button>
-                      <button onClick={() => { if(confirm('Yakin ingin menghapus?')) delEkspedisiMut.mutate(item.id) }} className="text-red-500 hover:bg-red-50 p-1.5 rounded"><Trash2 size={16}/></button>
+                      <Button variant="outline" onClick={() => openEditModal(item)} className="text-blue-500 hover:bg-blue-50 p-1.5 rounded"><Edit2 size={16}/></Button>
+                      <Button variant="outline" onClick={() => { if(confirm('Yakin ingin menghapus?')) delEkspedisiMut.mutate(item.id) }} className="text-red-500 hover:bg-red-50 p-1.5 rounded"><Trash2 size={16}/></Button>
                     </td>
                   </tr>
                 ))}
@@ -222,8 +222,8 @@ export default function MasterData() {
                     <td className="px-4 py-3 text-gray-800">{item.kotaKab}</td>
                     <td className="px-4 py-3 text-xs text-gray-500">{item.alamat || '-'}</td>
                     <td className="px-4 py-3 text-center flex items-center justify-center gap-2">
-                      <button onClick={() => openEditModal(item)} className="text-blue-500 hover:bg-blue-50 p-1.5 rounded"><Edit2 size={16}/></button>
-                      <button onClick={() => { if(confirm('Yakin ingin menghapus?')) delWilayahMut.mutate(item.id) }} className="text-red-500 hover:bg-red-50 p-1.5 rounded"><Trash2 size={16}/></button>
+                      <Button variant="outline" onClick={() => openEditModal(item)} className="text-blue-500 hover:bg-blue-50 p-1.5 rounded"><Edit2 size={16}/></Button>
+                      <Button variant="outline" onClick={() => { if(confirm('Yakin ingin menghapus?')) delWilayahMut.mutate(item.id) }} className="text-red-500 hover:bg-red-50 p-1.5 rounded"><Trash2 size={16}/></Button>
                     </td>
                   </tr>
                 ))}
@@ -240,9 +240,9 @@ export default function MasterData() {
               <h2 className="text-lg font-semibold text-gray-800">
                 {editId ? 'Edit' : 'Tambah'} {tabs.find(t => t.id === activeTab)?.label}
               </h2>
-              <button onClick={closeModal} className="text-gray-400 hover:text-gray-600 transition-colors">
+              <Button variant="outline" size="icon" onClick={closeModal}>
                 <X size={20} />
-              </button>
+              </Button>
             </div>
             
             <div className="p-6">
@@ -285,12 +285,12 @@ export default function MasterData() {
                 )}
 
                 <div className="pt-4 flex gap-3">
-                  <button type="button" onClick={closeModal} className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md text-sm font-medium transition-colors">
+                  <Button variant="outline" type="button" onClick={closeModal}>
                     Batal
-                  </button>
-                  <button type="submit" className="flex-1 px-4 py-2 bg-[#0f766e] text-white hover:bg-[#115e59] rounded-md text-sm font-medium transition-colors">
+                  </Button>
+                  <Button variant="default" type="submit">
                     {editId ? 'Simpan Perubahan' : 'Simpan Data'}
-                  </button>
+                  </Button>
                 </div>
               </form>
             </div>

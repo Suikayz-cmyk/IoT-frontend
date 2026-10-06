@@ -1,3 +1,5 @@
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import DashboardLayout from '@/components/layout/DashboardLayout'
@@ -100,8 +102,7 @@ export default function PemesananList() {
         <div className="p-5 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="relative max-w-md w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-            <input 
-              type="text" 
+            <Input type="text" 
               placeholder="Cari Instansi, PIC, Kategori atau Kode..." 
               value={searchTerm}
               onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
@@ -109,13 +110,12 @@ export default function PemesananList() {
             />
           </div>
           
-          <button 
-            onClick={() => navigate('/pemesanan/add')}
+          <Button variant="outline" onClick={() => navigate('/pemesanan/add')}
             className="flex items-center gap-2 bg-[#0f766e] hover:bg-[#115e59] text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm shrink-0"
           >
             <Plus size={20} />
             <span>Tambah Data</span>
-          </button>
+          </Button>
         </div>
 
         <div className="overflow-x-auto min-h-100">
@@ -191,28 +191,25 @@ export default function PemesananList() {
                     <td className="py-3 px-5">{formatDate(item.createdAt)}</td>
                       <td className="py-3 px-5">{formatDate(item.updatedAt)}</td>
                       <td className="py-3 px-5 text-center flex items-center justify-center gap-1">
-                      <button 
-                        onClick={() => navigate(`/pemesanan/${item.id}`)}
+                      <Button variant="outline" onClick={() => navigate(`/pemesanan/${item.id}`)}
                         className="text-blue-600 hover:bg-blue-50 p-1.5 rounded transition-colors"
                         title="Lihat Detail"
                       >
                         <Eye size={18} />
-                      </button>
-                      <button 
-                        onClick={() => navigate(`/pemesanan/edit/${item.id}`)}
+                      </Button>
+                      <Button variant="outline" onClick={() => navigate(`/pemesanan/edit/${item.id}`)}
                         className="text-amber-600 hover:bg-amber-50 p-1.5 rounded transition-colors"
                         title="Edit Data"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
-                      </button>
-                      <button 
-                        onClick={() => handleDelete(item.id, item.kategori)}
+                      </Button>
+                      <Button variant="outline" onClick={() => handleDelete(item.id, item.kategori)}
                         disabled={deleteMut.isPending}
                         className="text-red-600 hover:bg-red-50 p-1.5 rounded transition-colors disabled:opacity-50"
                         title="Hapus Data"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
-                      </button>
+                      </Button>
                     </td>
                   </tr>
                 ))
@@ -227,20 +224,18 @@ export default function PemesananList() {
         {totalPages > 0 && (
           <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
             <div className="flex flex-1 justify-between sm:hidden">
-              <button
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              <Button variant="outline" onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
                 className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
               >
                 Previous
-              </button>
-              <button
-                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              </Button>
+              <Button variant="outline" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                 disabled={currentPage === totalPages}
                 className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
               >
                 Next
-              </button>
+              </Button>
             </div>
             <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
               <div>
@@ -250,8 +245,7 @@ export default function PemesananList() {
               </div>
               <div>
                 <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
-                  <button
-                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  <Button variant="outline" onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                     disabled={currentPage === 1}
                     className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
                   >
@@ -259,7 +253,7 @@ export default function PemesananList() {
                     <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                       <path fillRule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clipRule="evenodd" />
                     </svg>
-                  </button>
+                  </Button>
                   
                   {/* Page Numbers */}
                   {[...Array(totalPages)].map((_, idx) => {
@@ -267,13 +261,12 @@ export default function PemesananList() {
                     // Tampilkan maksimal 5 halaman di sekitar current page
                     if (page === 1 || page === totalPages || (page >= currentPage - 1 && page <= currentPage + 1)) {
                       return (
-                        <button
-                          key={page}
+                        <Button variant="outline" key={page}
                           onClick={() => setCurrentPage(page)}
                           className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${currentPage === page ? 'z-10 bg-teal-600 text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600' : 'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0'}`}
                         >
                           {page}
-                        </button>
+                        </Button>
                       );
                     } else if (page === currentPage - 2 || page === currentPage + 2) {
                       return <span key={page} className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300">...</span>;
@@ -281,8 +274,7 @@ export default function PemesananList() {
                     return null;
                   })}
 
-                  <button
-                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  <Button variant="outline" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                     disabled={currentPage === totalPages}
                     className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
                   >
@@ -290,7 +282,7 @@ export default function PemesananList() {
                     <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                       <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
                     </svg>
-                  </button>
+                  </Button>
                 </nav>
               </div>
             </div>

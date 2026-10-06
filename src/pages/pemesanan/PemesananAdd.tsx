@@ -1,3 +1,5 @@
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 ﻿import { useEffect } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -121,13 +123,12 @@ export default function PemesananAdd() {
     <DashboardLayout title="">
       
       <div className="mb-6 flex items-center gap-4 sticky top-0 bg-[#f8f9fa] z-10 pt-4 pb-4 border-b border-gray-100">
-        <button 
-          onClick={() => navigate('/pemesanan')}
+        <Button variant="outline" onClick={() => navigate('/pemesanan')}
           className="p-2 bg-white rounded-full border border-gray-200 hover:bg-gray-50 text-gray-600 transition-colors inline-flex shadow-sm"
           title="Kembali"
         >
           <ChevronLeft size={20} />
-        </button>
+        </Button>
         <h2 className="text-xl font-semibold text-gray-800">{id ? 'Form Edit Data' : 'Form Tambah Data'}</h2>
       </div>
         {isError && (
@@ -159,11 +160,10 @@ export default function PemesananAdd() {
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-700">Kode Pemesanan <span className="text-red-500">*</span></label>
-              <input 
-                type="text" 
+              <Input type="text" 
                 {...register("kodePemesanan")}
                 placeholder="Masukkan Kode"
-                className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                
                 required
               />
             </div>
@@ -176,20 +176,16 @@ export default function PemesananAdd() {
               <FormPurchaseOrder />
 
               <div className="flex justify-end gap-3 pt-6 border-t border-gray-200 mt-8">
-                <button 
-                  type="button" 
+                <Button variant="outline" type="button" 
                   onClick={() => navigate('/pemesanan')}
                   className="px-6 py-2.5 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   Batal
-                </button>
-                <button 
-                  type="submit" 
-                  disabled={saveMutation.isPending}
-                  className="px-6 py-2.5 bg-teal-700 text-white font-medium rounded-lg hover:bg-teal-800 transition-colors disabled:opacity-70"
-                >
+                </Button>
+                <Button variant="default" type="submit" 
+                  disabled={saveMutation.isPending}>
                   {saveMutation.isPending ? 'Menyimpan...' : 'Lanjut / Simpan'}
-                </button>
+                </Button>
               </div>
             </>
           )}

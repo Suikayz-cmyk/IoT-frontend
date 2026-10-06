@@ -1,3 +1,5 @@
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { useNavigate, useParams } from 'react-router-dom'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import { ChevronLeft } from 'lucide-react'
@@ -8,7 +10,7 @@ import { spjApi } from '@/api/spj'
 const ReadOnlyField = ({ label, value, helperText }: { label: string, value: string | number | undefined, helperText?: string }) => (
   <div className="space-y-1.5">
     <label className="text-sm font-medium text-gray-700">{label}</label>
-    <input type="text" value={value || '-'} readOnly className="w-full border border-gray-300 bg-gray-50 rounded-md px-3 py-2 text-sm text-gray-600 outline-none" />
+    <Input type="text" value={value || '-'} readOnly  />
     {helperText && <p className="text-xs text-gray-400">{helperText}</p>}
   </div>
 )
@@ -29,13 +31,12 @@ export default function SPJDetail() {
   return (
     <DashboardLayout title="">
       <div className="mb-6 flex items-center gap-4 sticky top-0 bg-[#f8f9fa] z-10 pt-4.25 pb-4">
-        <button 
-          onClick={() => navigate('/spj')}
+        <Button variant="outline" onClick={() => navigate('/spj')}
           className="p-2 bg-white rounded-full border border-gray-200 hover:bg-gray-50 text-gray-600 transition-colors inline-flex shadow-sm"
           title="Kembali"
         >
           <ChevronLeft size={20} />
-        </button>
+        </Button>
         <h2 className="text-xl font-semibold text-gray-800">Lihat Detail</h2>
       </div>
 

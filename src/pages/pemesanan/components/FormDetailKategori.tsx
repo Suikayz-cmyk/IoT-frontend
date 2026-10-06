@@ -1,3 +1,4 @@
+import { Input } from '@/components/ui/input';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useFormContext } from 'react-hook-form';
 import type { FormValues } from '../types';
@@ -26,7 +27,7 @@ export default function FormDetailKategori({ wilayahList = [], ekspedisiList = [
                   <>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">Quantity <span className="text-red-500">*</span></label>
-                      <input type="number" {...register("quantity")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+                      <Input type="number" {...register("quantity")}  />
                     </div>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">Periode Berlangganan <span className="text-red-500">*</span></label>
@@ -38,7 +39,7 @@ export default function FormDetailKategori({ wilayahList = [], ekspedisiList = [
                     </div>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">Harga + PPN <span className="text-red-500">*</span></label>
-                      <input type="text" placeholder="Rp" {...register("hargaPPN")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+                      <Input type="text" placeholder="Rp" {...register("hargaPPN")}  />
                     </div>
                   </>
                 )}
@@ -57,7 +58,7 @@ export default function FormDetailKategori({ wilayahList = [], ekspedisiList = [
                     </div>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">Quantity <span className="text-red-500">*</span></label>
-                      <input type="number" {...register("quantity")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+                      <Input type="number" {...register("quantity")}  />
                     </div>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">Wilayah Pengiriman <span className="text-red-500">*</span></label>
@@ -70,7 +71,7 @@ export default function FormDetailKategori({ wilayahList = [], ekspedisiList = [
                     </div>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">Berat (KG) <span className="text-red-500">*</span></label>
-                      <input type="number" {...register("berat")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+                      <Input type="number" {...register("berat")}  />
                     </div>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">Ekspedisi</label>
@@ -83,7 +84,7 @@ export default function FormDetailKategori({ wilayahList = [], ekspedisiList = [
                     </div>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">Nomor Resi</label>
-                      <input type="text" placeholder="Masukkan Nomor" {...register("nomorResi")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+                      <Input type="text" placeholder="Masukkan Nomor" {...register("nomorResi")}  />
                     </div>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">Tanggal Barang Diterima</label>
@@ -94,51 +95,51 @@ export default function FormDetailKategori({ wilayahList = [], ekspedisiList = [
 
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">Harga <span className="text-red-500">*</span></label>
-                      <input type="text" placeholder="Rp" {...register("harga")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+                      <Input type="text" placeholder="Rp" {...register("harga")}  />
                     </div>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">PPN 11% <span className="text-red-500">*</span></label>
-                      <input type="text" placeholder="Rp" {...register("ppn11")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+                      <Input type="text" placeholder="Rp" {...register("ppn11")}  />
                     </div>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">Ongkir KUT <span className="text-red-500">*</span></label>
-                      <input type="text" placeholder="Rp" {...register("ongkirKUT")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+                      <Input type="text" placeholder="Rp" {...register("ongkirKUT")}  />
                     </div>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">Harga PPN 11% + Ongkir <span className="text-red-500">*</span></label>
-                      <input type="text" placeholder="Rp" {...register("hargaPPN11Ongkir")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+                      <Input type="text" placeholder="Rp" {...register("hargaPPN11Ongkir")}  />
                     </div>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">Total Harga + Ongkir <span className="text-red-500">*</span></label>
-                      <input type="text" placeholder="Rp" {...register("totalHargaOngkir")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+                      <Input type="text" placeholder="Rp" {...register("totalHargaOngkir")}  />
                     </div>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">Total Harga Jual <span className="text-red-500">*</span></label>
-                      <input type="text" placeholder="Rp" {...register("totalHargaJual")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+                      <Input type="text" placeholder="Rp" {...register("totalHargaJual")}  />
                     </div>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">Harga Produk Reseller <span className="text-red-500">*</span></label>
-                      <input type="text" placeholder="Rp" {...register("hargaProdukReseller")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+                      <Input type="text" placeholder="Rp" {...register("hargaProdukReseller")}  />
                     </div>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">PPN 11% Reseller <span className="text-red-500">*</span></label>
-                      <input type="text" placeholder="Rp" {...register("ppn11Reseller")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+                      <Input type="text" placeholder="Rp" {...register("ppn11Reseller")}  />
                     </div>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">Ongkir Reseller <span className="text-red-500">*</span></label>
-                      <input type="text" placeholder="Rp" {...register("ongkirReseller")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+                      <Input type="text" placeholder="Rp" {...register("ongkirReseller")}  />
                     </div>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">Harga PPN 11% + Ongkir Reseller <span className="text-red-500">*</span></label>
-                      <input type="text" placeholder="Rp" {...register("hargaPPN11OngkirReseller")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+                      <Input type="text" placeholder="Rp" {...register("hargaPPN11OngkirReseller")}  />
                     </div>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">Total Harga + Ongkir Reseller <span className="text-red-500">*</span></label>
-                      <input type="text" placeholder="Rp" {...register("totalHargaOngkirReseller")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+                      <Input type="text" placeholder="Rp" {...register("totalHargaOngkirReseller")}  />
                     </div>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">Total Harga Reseller <span className="text-red-500">*</span></label>
-                      <input type="text" placeholder="Rp" {...register("totalHargaReseller")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+                      <Input type="text" placeholder="Rp" {...register("totalHargaReseller")}  />
                     </div>
                   </>
                 )}
@@ -176,11 +177,11 @@ export default function FormDetailKategori({ wilayahList = [], ekspedisiList = [
                     </div>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">Nomor Surat Penawaran Harga <span className="text-red-500">*</span></label>
-                      <input type="text" placeholder="Masukkan Nomor" {...register("nomorSuratPenawaranHarga")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+                      <Input type="text" placeholder="Masukkan Nomor" {...register("nomorSuratPenawaranHarga")}  />
                     </div>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">Nomor Kontrak Berlangganan <span className="text-red-500">*</span></label>
-                      <input type="text" placeholder="Masukkan Nomor" {...register("nomorKontrakBerlangganan")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+                      <Input type="text" placeholder="Masukkan Nomor" {...register("nomorKontrakBerlangganan")}  />
                     </div>
                   </>
                 )}
@@ -189,11 +190,11 @@ export default function FormDetailKategori({ wilayahList = [], ekspedisiList = [
                   <>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">Nomor Penyampaian Daftar Harga</label>
-                      <input type="text" placeholder="Masukkan Nomor" {...register("nomorPenyampaianDaftarHarga")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+                      <Input type="text" placeholder="Masukkan Nomor" {...register("nomorPenyampaianDaftarHarga")}  />
                     </div>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">Nomor Formulir Pembelian</label>
-                      <input type="text" placeholder="Masukkan Nomor" {...register("nomorFormulirPembelian")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+                      <Input type="text" placeholder="Masukkan Nomor" {...register("nomorFormulirPembelian")}  />
                     </div>
                   </>
                 )}
@@ -201,7 +202,7 @@ export default function FormDetailKategori({ wilayahList = [], ekspedisiList = [
                 {isManual && isIoT && (
                    <div className="space-y-1">
                      <label className="text-sm font-medium text-gray-700">Nomor Formulir Berlangganan <span className="text-red-500">*</span></label>
-                     <input type="text" placeholder="Masukkan Nomor" {...register("nomorFormulirBerlangganan")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+                     <Input type="text" placeholder="Masukkan Nomor" {...register("nomorFormulirBerlangganan")}  />
                    </div>
                 )}
               </div>

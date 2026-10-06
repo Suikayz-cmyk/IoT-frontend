@@ -6,6 +6,8 @@ import { ChevronLeft } from 'lucide-react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { masterApi } from '@/api/masterApi'
 import { spjApi } from '@/api/spj'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import CustomDatePicker from '@/components/ui/CustomDatePicker'
 
 export default function SPJAdd() {
@@ -130,14 +132,9 @@ export default function SPJAdd() {
   return (
     <DashboardLayout title="">
       <div className="mb-6 flex items-center gap-4 sticky top-0 bg-[#f8f9fa] z-10 pt-4 pb-4 border-b border-gray-100">
-        <button 
-          type="button"
-          onClick={() => navigate('/spj')}
-          className="p-2 bg-white rounded-full border border-gray-200 hover:bg-gray-50 text-gray-600 transition-colors inline-flex shadow-sm"
-          title="Kembali"
-        >
+        <Button variant="outline" size="icon" type="button" onClick={() => navigate('/spj')} title="Kembali">
           <ChevronLeft size={20} />
-        </button>
+        </Button>
         <h2 className="text-xl font-semibold text-gray-800">{id ? 'Form Edit Data SPJ' : 'Form Tambah Data SPJ'}</h2>
       </div>
 
@@ -168,7 +165,7 @@ export default function SPJAdd() {
                 value={namaInstansi} 
                 onChange={handleInstansiChange} 
                 required 
-                className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0f766e]"
+               
               >
                 <option value="">Pilih Instansi</option>
                 {instansiList.map(item => (
@@ -180,7 +177,7 @@ export default function SPJAdd() {
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-700">Nama PIC <span className="text-red-500">*</span></label>
-              <input type="text" list="pic-list" value={namaPIC} onChange={handlePicChange} className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0f766e]" placeholder="Ketik atau pilih PIC" />
+              <Input type="text" list="pic-list" value={namaPIC} onChange={handlePicChange} placeholder="Ketik atau pilih PIC" />
               <datalist id="pic-list">
                 {picList.map(item => <option key={item.id} value={item.namaPIC} />)}
               </datalist>
@@ -188,22 +185,22 @@ export default function SPJAdd() {
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-700">Nomor Telepon PIC <span className="text-red-500">*</span></label>
-              <input type="text" value={noTelpPIC} onChange={(e) => setNoTelpPIC(e.target.value)} required className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0f766e]" />
+              <Input type="text" value={noTelpPIC} onChange={(e) => setNoTelpPIC(e.target.value)} required />
               <p className="text-xs text-gray-500">Terisi otomatis dari hasil cek, bisa diubah</p>
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-700">Alamat <span className="text-red-500">*</span></label>
-              <input type="text" value={alamat} onChange={(e) => setAlamat(e.target.value)} required className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0f766e]" />
+              <Input type="text" value={alamat} onChange={(e) => setAlamat(e.target.value)} required />
               <p className="text-xs text-gray-500">Terisi otomatis dari hasil cek, bisa diubah</p>
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-700">Kota/Kabupaten <span className="text-red-500">*</span></label>
-              <input type="text" value={kota} onChange={(e) => setKota(e.target.value)} required className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0f766e]" />
+              <Input type="text" value={kota} onChange={(e) => setKota(e.target.value)} required />
               <p className="text-xs text-gray-500">Terisi otomatis dari hasil cek, bisa diubah</p>
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-700">Provinsi <span className="text-red-500">*</span></label>
-              <input type="text" value={provinsi} onChange={(e) => setProvinsi(e.target.value)} required className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0f766e]" />
+              <Input type="text" value={provinsi} onChange={(e) => setProvinsi(e.target.value)} required />
               <p className="text-xs text-gray-500">Terisi otomatis dari hasil cek, bisa diubah</p>
             </div>
           </div>
@@ -239,12 +236,12 @@ export default function SPJAdd() {
             </div>
             <div className="space-y-1.5 md:col-span-2">
               <label className="text-sm font-medium text-gray-700">Kebutuhan SPJ <span className="text-red-500">*</span></label>
-              <textarea value={kebutuhanSPJ} onChange={(e) => setKebutuhanSPJ(e.target.value)} required placeholder="Masukkan Keterangan" className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" rows={3}></textarea>
+              <textarea value={kebutuhanSPJ} onChange={(e) => setKebutuhanSPJ(e.target.value)} required placeholder="Masukkan Keterangan" rows={3}></textarea>
             </div>
 
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-700">Jumlah Rangkap <span className="text-red-500">*</span></label>
-              <select value={jumlahRangkap} onChange={(e) => setJumlahRangkap(e.target.value)} required className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <select value={jumlahRangkap} onChange={(e) => setJumlahRangkap(e.target.value)} required>
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
@@ -254,7 +251,7 @@ export default function SPJAdd() {
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-700">Jenis Kertas <span className="text-red-500">*</span></label>
-              <select value={jenisKertas} onChange={(e) => setJenisKertas(e.target.value)} required className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <select value={jenisKertas} onChange={(e) => setJenisKertas(e.target.value)} required>
                 <option value="">Pilih Jenis</option>
                 <option value="A4">A4</option>
                 <option value="F4">F4</option>
@@ -263,34 +260,26 @@ export default function SPJAdd() {
 
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-700">Jenis File <span className="text-red-500">*</span></label>
-              <select value={jenisFile} onChange={(e) => setJenisFile(e.target.value)} required className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <select value={jenisFile} onChange={(e) => setJenisFile(e.target.value)} required>
                 <option value="">Pilih Jenis</option>
                 <option value="PDF">PDF</option>
               </select>
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-700">PIC Print <span className="text-red-500">*</span></label>
-              <input type="text" value={picPrint} onChange={(e) => setPicPrint(e.target.value)} required placeholder="Masukkan Nama" className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              <Input type="text" value={picPrint} onChange={(e) => setPicPrint(e.target.value)} required placeholder="Masukkan Nama" />
             </div>
 
           </div>
         </div>
 
         <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 mt-8">
-          <button 
-            type="button" 
-            onClick={() => navigate('/spj')}
-            className="px-6 py-2.5 border border-gray-300 bg-white text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
-          >
+          <Button variant="outline" type="button" onClick={() => navigate('/spj')}>
             Batal
-          </button>
-          <button 
-            type="submit" 
-            disabled={saveMutation.isPending}
-            className="px-6 py-2.5 bg-teal-700 text-white font-medium rounded-lg hover:bg-teal-800 transition-colors disabled:opacity-70"
-          >
+          </Button>
+          <Button type="submit" disabled={saveMutation.isPending}>
             {saveMutation.isPending ? 'Menyimpan...' : 'Lanjut / Simpan'}
-          </button>
+          </Button>
         </div>
       </form>
     </DashboardLayout>

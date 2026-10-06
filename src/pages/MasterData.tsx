@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import { Trash2, Plus, Edit2, X } from 'lucide-react'
 import { masterApi } from '@/api/masterApi'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 type TabType = 'instansi' | 'pic' | 'ekspedisi' | 'wilayah'
 
@@ -156,79 +157,79 @@ export default function MasterData() {
             </Button>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-gray-600">
-              <thead className="bg-gray-50 text-gray-800 font-semibold border-b border-gray-200">
-                <tr>
-                  <th className="px-4 py-3 w-12 text-center">No</th>
-                  {activeTab === 'instansi' && <><th className="px-4 py-3">Instansi</th><th className="px-4 py-3">NPWP</th><th className="px-4 py-3">Alamat</th><th className="px-4 py-3">Kota/Kabupaten</th><th className="px-4 py-3">Provinsi</th></>}
-                  {activeTab === 'pic' && <><th className="px-4 py-3">Instansi</th><th className="px-4 py-3">Nama PIC</th><th className="px-4 py-3">NIK</th><th className="px-4 py-3">Email</th><th className="px-4 py-3">Telepon</th></>}
+            <Table className="w-full text-left text-sm text-gray-600">
+              <TableHeader className="bg-gray-50 text-gray-800 font-semibold border-b border-gray-200">
+                <TableRow>
+                  <TableHead className="px-4 py-3 w-12 text-center">No</TableHead>
+                  {activeTab === 'instansi' && <><TableHead className="px-4 py-3">Instansi</TableHead><TableHead className="px-4 py-3">NPWP</TableHead><TableHead className="px-4 py-3">Alamat</TableHead><TableHead className="px-4 py-3">Kota/Kabupaten</TableHead><TableHead className="px-4 py-3">Provinsi</TableHead></>}
+                  {activeTab === 'pic' && <><TableHead className="px-4 py-3">Instansi</TableHead><TableHead className="px-4 py-3">Nama PIC</TableHead><TableHead className="px-4 py-3">NIK</TableHead><TableHead className="px-4 py-3">Email</TableHead><TableHead className="px-4 py-3">Telepon</TableHead></>}
                   
-                  {activeTab === 'ekspedisi' && <th className="px-4 py-3">Nama Ekspedisi</th>}
-                  {activeTab === 'wilayah' && <><th className="px-4 py-3">Provinsi</th><th className="px-4 py-3">Kota/Kabupaten</th><th className="px-4 py-3">Alamat</th></>}
-                  <th className="px-4 py-3 w-24 text-center">Aksi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
+                  {activeTab === 'ekspedisi' && <TableHead className="px-4 py-3">Nama Ekspedisi</TableHead>}
+                  {activeTab === 'wilayah' && <><TableHead className="px-4 py-3">Provinsi</TableHead><TableHead className="px-4 py-3">Kota/Kabupaten</TableHead><TableHead className="px-4 py-3">Alamat</TableHead></>}
+                  <TableHead className="px-4 py-3 w-24 text-center">Aksi</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody className="divide-y divide-gray-100">
 
-                {activeTab === 'instansi' && instansiList.length === 0 && <tr><td colSpan={8} className="text-center py-8">Belum ada data</td></tr>}
+                {activeTab === 'instansi' && instansiList.length === 0 && <TableRow><TableCell colSpan={8} className="text-center py-8">Belum ada data</TableCell></TableRow>}
                 {activeTab === 'instansi' && instansiList.map((item, idx) => (
-                  <tr key={item.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 text-center">{idx + 1}</td>
-                    <td className="px-4 py-3 font-medium text-gray-800">{item.namaInstansi}</td>
-                    <td className="px-4 py-3 font-mono text-xs text-gray-500">{item.npwp || '-'}</td>
-                    <td className="px-4 py-3 text-xs text-gray-600 truncate max-w-50" title={item.alamat}>{item.alamat || '-'}</td>
-                    <td className="px-4 py-3 text-xs">{item.kotaKab}</td>
-                    <td className="px-4 py-3 text-xs">{item.provinsi}</td>
-                    <td className="px-4 py-3 text-center flex items-center justify-center gap-2">
+                  <TableRow key={item.id} className="hover:bg-gray-50">
+                    <TableCell className="px-4 py-3 text-center">{idx + 1}</TableCell>
+                    <TableCell className="px-4 py-3 font-medium text-gray-800">{item.namaInstansi}</TableCell>
+                    <TableCell className="px-4 py-3 font-mono text-xs text-gray-500">{item.npwp || '-'}</TableCell>
+                    <TableCell className="px-4 py-3 text-xs text-gray-600 truncate max-w-50" title={item.alamat}>{item.alamat || '-'}</TableCell>
+                    <TableCell className="px-4 py-3 text-xs">{item.kotaKab}</TableCell>
+                    <TableCell className="px-4 py-3 text-xs">{item.provinsi}</TableCell>
+                    <TableCell className="px-4 py-3 text-center flex items-center justify-center gap-2">
                       <Button variant="outline" onClick={() => openEditModal(item)} className="text-blue-500 hover:bg-blue-50 p-1.5 rounded"><Edit2 size={16}/></Button>
                       <Button variant="outline" onClick={() => { if(confirm('Yakin ingin menghapus?')) delInstansiMut.mutate(item.id) }} className="text-red-500 hover:bg-red-50 p-1.5 rounded"><Trash2 size={16}/></Button>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))}
 
-                {activeTab === 'pic' && picList.length === 0 && <tr><td colSpan={7} className="text-center py-8">Belum ada data</td></tr>}
+                {activeTab === 'pic' && picList.length === 0 && <TableRow><TableCell colSpan={7} className="text-center py-8">Belum ada data</TableCell></TableRow>}
                 {activeTab === 'pic' && picList.map((item, idx) => (
-                  <tr key={item.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 text-center">{idx + 1}</td>
-                    <td className="px-4 py-3 text-xs text-gray-600">{instansiList.find(i => i.id === item.instansiId)?.namaInstansi || 'Unknown'}</td>
-                    <td className="px-4 py-3 font-medium text-gray-800">{item.namaPIC}</td>
-                    <td className="px-4 py-3 font-mono text-xs text-gray-500">{item.nik || '-'}</td>
-                    <td className="px-4 py-3 text-xs text-gray-600">{item.email || '-'}</td>
-                    <td className="px-4 py-3 font-mono text-xs text-gray-600">{item.noTelp || '-'}</td>
-                    <td className="px-4 py-3 text-center flex items-center justify-center gap-2">
+                  <TableRow key={item.id} className="hover:bg-gray-50">
+                    <TableCell className="px-4 py-3 text-center">{idx + 1}</TableCell>
+                    <TableCell className="px-4 py-3 text-xs text-gray-600">{instansiList.find(i => i.id === item.instansiId)?.namaInstansi || 'Unknown'}</TableCell>
+                    <TableCell className="px-4 py-3 font-medium text-gray-800">{item.namaPIC}</TableCell>
+                    <TableCell className="px-4 py-3 font-mono text-xs text-gray-500">{item.nik || '-'}</TableCell>
+                    <TableCell className="px-4 py-3 text-xs text-gray-600">{item.email || '-'}</TableCell>
+                    <TableCell className="px-4 py-3 font-mono text-xs text-gray-600">{item.noTelp || '-'}</TableCell>
+                    <TableCell className="px-4 py-3 text-center flex items-center justify-center gap-2">
                       <Button variant="outline" onClick={() => openEditModal(item)} className="text-blue-500 hover:bg-blue-50 p-1.5 rounded"><Edit2 size={16}/></Button>
                       <Button variant="outline" onClick={() => { if(confirm('Yakin ingin menghapus?')) delPICMut.mutate(item.id) }} className="text-red-500 hover:bg-red-50 p-1.5 rounded"><Trash2 size={16}/></Button>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))}
 
-                {activeTab === 'ekspedisi' && ekspedisiList.length === 0 && <tr><td colSpan={3} className="text-center py-8">Belum ada data</td></tr>}
+                {activeTab === 'ekspedisi' && ekspedisiList.length === 0 && <TableRow><TableCell colSpan={3} className="text-center py-8">Belum ada data</TableCell></TableRow>}
                                 {activeTab === 'ekspedisi' && ekspedisiList.map((item, idx) => (
-                  <tr key={item.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 text-center">{idx + 1}</td>
-                    <td className="px-4 py-3 font-medium text-gray-800">{item.namaEkspedisi}</td>
-                    <td className="px-4 py-3 text-center flex items-center justify-center gap-2">
+                  <TableRow key={item.id} className="hover:bg-gray-50">
+                    <TableCell className="px-4 py-3 text-center">{idx + 1}</TableCell>
+                    <TableCell className="px-4 py-3 font-medium text-gray-800">{item.namaEkspedisi}</TableCell>
+                    <TableCell className="px-4 py-3 text-center flex items-center justify-center gap-2">
                       <Button variant="outline" onClick={() => openEditModal(item)} className="text-blue-500 hover:bg-blue-50 p-1.5 rounded"><Edit2 size={16}/></Button>
                       <Button variant="outline" onClick={() => { if(confirm('Yakin ingin menghapus?')) delEkspedisiMut.mutate(item.id) }} className="text-red-500 hover:bg-red-50 p-1.5 rounded"><Trash2 size={16}/></Button>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))}
 
-                {activeTab === 'wilayah' && wilayahList.length === 0 && <tr><td colSpan={5} className="text-center py-8">Belum ada data</td></tr>}
+                {activeTab === 'wilayah' && wilayahList.length === 0 && <TableRow><TableCell colSpan={5} className="text-center py-8">Belum ada data</TableCell></TableRow>}
                 {activeTab === 'wilayah' && wilayahList.map((item, idx) => (
-                  <tr key={item.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 text-center">{idx + 1}</td>
-                    <td className="px-4 py-3 font-medium text-gray-800">{item.provinsi}</td>
-                    <td className="px-4 py-3 text-gray-800">{item.kotaKab}</td>
-                    <td className="px-4 py-3 text-xs text-gray-500">{item.alamat || '-'}</td>
-                    <td className="px-4 py-3 text-center flex items-center justify-center gap-2">
+                  <TableRow key={item.id} className="hover:bg-gray-50">
+                    <TableCell className="px-4 py-3 text-center">{idx + 1}</TableCell>
+                    <TableCell className="px-4 py-3 font-medium text-gray-800">{item.provinsi}</TableCell>
+                    <TableCell className="px-4 py-3 text-gray-800">{item.kotaKab}</TableCell>
+                    <TableCell className="px-4 py-3 text-xs text-gray-500">{item.alamat || '-'}</TableCell>
+                    <TableCell className="px-4 py-3 text-center flex items-center justify-center gap-2">
                       <Button variant="outline" onClick={() => openEditModal(item)} className="text-blue-500 hover:bg-blue-50 p-1.5 rounded"><Edit2 size={16}/></Button>
                       <Button variant="outline" onClick={() => { if(confirm('Yakin ingin menghapus?')) delWilayahMut.mutate(item.id) }} className="text-red-500 hover:bg-red-50 p-1.5 rounded"><Trash2 size={16}/></Button>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
         </div>
       </div>

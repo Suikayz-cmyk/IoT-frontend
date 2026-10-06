@@ -3,13 +3,28 @@ import { Button } from '@/components/ui/button';
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import DashboardLayout from '@/components/layout/DashboardLayout'
-import { Plus, Search, Eye } from 'lucide-react'
+import { Plus, Search, Eye, ChevronDown } from 'lucide-react'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { spjApi } from '@/api/spj'
 import { formatDate } from '@/utils/formatters'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+
 
 export default function SPJPage() {
   const navigate = useNavigate()
+
+  const getStatusStyles = (status: string | undefined | null) => {
+    if (!status) return 'bg-slate-100 text-slate-700 border-slate-200';
+    const s = status.toLowerCase();
+    if (s === 'baru') return 'bg-sky-50 text-sky-700 border border-sky-200';
+    if (s === 'pending') return 'bg-amber-50 text-amber-700 border border-amber-200';
+    if (s === 'diproses' || s === 'proses') return 'bg-orange-50 text-orange-700 border border-orange-200';
+    if (s === 'dikirim') return 'bg-blue-50 text-blue-700 border border-blue-200';
+    if (s === 'selesai') return 'bg-emerald-50 text-emerald-800 border border-emerald-200';
+    if (s === 'batal') return 'bg-rose-50 text-rose-700 border border-rose-200';
+    return 'bg-slate-100 text-slate-700 border border-slate-200';
+  };
+
   const [searchTerm, setSearchTerm] = useState('')
 
   const { data: spjList, isLoading, refetch } = useQuery({
@@ -69,59 +84,62 @@ export default function SPJPage() {
         </div>
 
         <div className="overflow-x-auto min-h-100">
-          <table className="w-full text-left border-collapse min-w-200">
-            <thead>
-              <tr className="bg-gray-50 border-b border-gray-200 text-sm text-gray-500">
-                <th className="py-3 px-5 font-medium whitespace-nowrap">Kode SPJ</th>
-                <th className="py-3 px-5 font-medium">Instansi</th>
-                <th className="py-3 px-5 font-medium">Kebutuhan SPJ</th>
-                <th className="py-3 px-5 font-medium">Tgl Print</th>
-                <th className="py-3 px-5 font-medium">PIC Print</th>
-                <th className="py-3 px-5 font-medium">Tgl Pengiriman</th>
-                <th className="py-3 px-5 font-medium">Status Pesanan</th>
-                <th className="py-3 px-5 font-medium text-center">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 text-sm text-gray-700">
+          <Table className="w-full text-left border-collapse min-w-200">
+            <TableHeader>
+              <TableRow className="bg-gray-50 border-b border-gray-200 text-sm text-gray-500">
+                <TableHead className="py-3 px-5 font-medium whitespace-nowrap">Kode SPJ</TableHead>
+                <TableHead className="py-3 px-5 font-medium">Instansi</TableHead>
+                <TableHead className="py-3 px-5 font-medium">Kebutuhan SPJ</TableHead>
+                <TableHead className="py-3 px-5 font-medium">Tgl Print</TableHead>
+                <TableHead className="py-3 px-5 font-medium">PIC Print</TableHead>
+                <TableHead className="py-3 px-5 font-medium">Tgl Pengiriman</TableHead>
+                <TableHead className="py-3 px-5 font-medium">Status Pesanan</TableHead>
+                <TableHead className="py-3 px-5 font-medium text-center">Aksi</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody className="divide-y divide-gray-200 text-sm text-gray-700">
               {isLoading ? (
-                <tr>
-                  <td colSpan={8} className="py-8 text-center text-gray-500">Memuat data...</td>
-                </tr>
+                <TableRow>
+                  <TableCell colSpan={8} className="py-8 text-center text-gray-500">Memuat data...</TableCell>
+                </TableRow>
               ) : filteredData.length === 0 ? (
-                <tr>
-                  <td colSpan={8} className="py-8 text-center text-gray-500">Tidak ada data SPJ.</td>
-                </tr>
+                <TableRow>
+                  <TableCell colSpan={8} className="py-8 text-center text-gray-500">Tidak ada data SPJ.</TableCell>
+                </TableRow>
               ) : (
                 filteredData.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="py-3 px-5 font-medium text-gray-900">
+                  <TableRow key={item.id} className="hover:bg-gray-50 transition-colors">
+                    <TableCell className="py-3 px-5 font-medium text-gray-900">
                       <div>{item.kodePemesanan || `SPJ-${item.id}`}</div>
                       <div className="text-xs text-gray-500">{formatDate(item.tanggalOrder)}</div>
-                    </td>
-                    <td className="py-3 px-5">
+                    </TableCell>
+                    <TableCell className="py-3 px-5">
                       <div className="font-medium text-gray-800">{item.namaInstansi || `Instansi ID: ${item.namaInstansi}`}</div>
                       <div className="text-xs text-gray-500">PIC: {item.namaPIC || '-'}</div>
-                    </td>
-                    <td className="py-3 px-5 font-medium text-gray-700">{item.kebutuhanSPJ}</td>
-                    <td className="py-3 px-5 text-gray-600">{formatDate(item.tglPrint)}</td>
-                    <td className="py-3 px-5 text-gray-600">{item.picPrint}</td>
-                    <td className="py-3 px-5 text-gray-600">{formatDate(item.tglPengiriman)}</td>
-                    <td className="py-3 px-5">
-                      <select 
-                        value={(item.statusPesanan || '').toLowerCase()} 
-                        onChange={(e) => {
-                          if (window.confirm(`Yakin ingin mengubah status SPJ menjadi '${e.target.value}'?`)) {
-                            updateStatusMut.mutate({ id: item.id, status: e.target.value })
-                          }
-                        }}
-                        className={`text-sm font-medium border rounded px-2 py-1 outline-none ${(item.statusPesanan || '').toLowerCase() === 'selesai' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-orange-50 text-orange-700 border-orange-200'}`}
-                      >
-                        <option value="">Pilih Status</option>
-                        <option value="diproses">Diproses</option>
-                        <option value="selesai">Selesai</option>
-                      </select>
-                    </td>
-                    <td className="py-3 px-5 text-center flex items-center justify-center gap-1">
+                    </TableCell>
+                    <TableCell className="py-3 px-5 font-medium text-gray-700">{item.kebutuhanSPJ}</TableCell>
+                    <TableCell className="py-3 px-5 text-gray-600">{formatDate(item.tglPrint)}</TableCell>
+                    <TableCell className="py-3 px-5 text-gray-600">{item.picPrint}</TableCell>
+                    <TableCell className="py-3 px-5 text-gray-600">{formatDate(item.tglPengiriman)}</TableCell>
+                    <TableCell className="py-3 px-5">
+                      <div className="relative inline-flex items-center">
+                        <select 
+                          value={(item.statusPesanan || '').toLowerCase()} 
+                          onChange={(e) => {
+                            if (window.confirm(`Yakin ingin mengubah status SPJ menjadi '${e.target.value}'?`)) {
+                              updateStatusMut.mutate({ id: item.id, status: e.target.value })
+                            }
+                          }}
+                          className={`cursor-pointer appearance-none focus:outline-none capitalize pl-2.5 pr-7 py-1 text-xs font-semibold rounded-full transition-colors ${getStatusStyles(item.statusPesanan)}`}
+                        >
+                          <option className="text-gray-900 bg-white" value="">Pilih Status</option>
+                          <option className="text-gray-900 bg-white" value="diproses">Diproses</option>
+                          <option className="text-gray-900 bg-white" value="selesai">Selesai</option>
+                        </select>
+                        <ChevronDown className="absolute right-2 w-3.5 h-3.5 pointer-events-none opacity-60" />
+                      </div>
+                    </TableCell>
+                    <TableCell className="py-3 px-5 text-center flex items-center justify-center gap-1">
                       <Button variant="outline" onClick={() => navigate(`/spj/${item.id}`)}
                         className="text-blue-600 hover:bg-blue-50 p-1.5 rounded transition-colors"
                         title="Lihat Detail"
@@ -141,12 +159,12 @@ export default function SPJPage() {
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                       </Button>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))
               )}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
         
         <div className="p-4 border-t border-gray-200 text-sm text-gray-500 flex justify-between items-center">

@@ -1,3 +1,4 @@
+import { Card } from "@/components/ui/card";
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 ﻿import { useEffect } from 'react'
@@ -141,7 +142,7 @@ export default function PemesananAdd() {
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 pb-12">
           
-          <div className="w-full bg-white p-6 shadow-sm border-y border-gray-200 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card className="w-full border-y md:border md:rounded-xl shadow-sm grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-700">Pilih Kategori <span className="text-red-500">*</span></label>
               <select 
@@ -167,7 +168,7 @@ export default function PemesananAdd() {
                 required
               />
             </div>
-          </div>
+          </Card>
 
           {watchKategori && (
             <>

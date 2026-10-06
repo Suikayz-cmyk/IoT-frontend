@@ -1,3 +1,4 @@
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -140,7 +141,7 @@ export default function SPJAdd() {
 
       <form onSubmit={handleSubmit} className="space-y-6 pb-12">
         
-        <div className="w-full bg-white p-6 shadow-sm border-y border-gray-200 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card className="p-6 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-gray-700">Pilih Kategori <span className="text-red-500">*</span></label>
             <select 
@@ -151,14 +152,14 @@ export default function SPJAdd() {
               <option value="SPJ">SPJ</option>
             </select>
           </div>
-        </div>
+        </Card>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <div className="bg-[#eef5f5] px-6 py-3 border-b border-gray-200 flex items-center gap-2 text-teal-800 font-semibold">
+        <Card className="overflow-hidden shadow-sm">
+          <CardHeader className="bg-[#eef5f5] px-6 py-3 border-b flex flex-row items-center gap-2 space-y-0 text-teal-800 font-semibold">
             <span className="w-5 h-5 rounded-full border-2 border-current flex items-center justify-center text-xs">i</span>
-            Data Pemesan
-          </div>
-          <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+            <CardTitle className="text-base font-semibold">Data Pemesan</CardTitle>
+          </CardHeader>
+          <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-700">Nama Instansi Pemesan <span className="text-red-500">*</span></label>
               <select 
@@ -203,15 +204,15 @@ export default function SPJAdd() {
               <Input type="text" value={provinsi} onChange={(e) => setProvinsi(e.target.value)} required />
               <p className="text-xs text-gray-500">Terisi otomatis dari hasil cek, bisa diubah</p>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <div className="bg-[#eef5f5] px-6 py-3 border-b border-gray-200 flex items-center gap-2 text-teal-800 font-semibold">
+        <Card className="overflow-hidden shadow-sm">
+          <CardHeader className="bg-[#eef5f5] px-6 py-3 border-b flex flex-row items-center gap-2 space-y-0 text-teal-800 font-semibold">
             <span className="w-5 h-5 rounded-full border-2 border-current flex items-center justify-center text-xs">i</span>
-            Detail SPJ
-          </div>
-          <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+            <CardTitle className="text-base font-semibold">Detail SPJ</CardTitle>
+          </CardHeader>
+          <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-700">Tanggal Print <span className="text-red-500">*</span></label>
               <CustomDatePicker value={tglPrint} onChange={(e) => setTglPrint(e.target.value)} required />
@@ -270,8 +271,8 @@ export default function SPJAdd() {
               <Input type="text" value={picPrint} onChange={(e) => setPicPrint(e.target.value)} required placeholder="Masukkan Nama" />
             </div>
 
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 mt-8">
           <Button variant="outline" type="button" onClick={() => navigate('/spj')}>

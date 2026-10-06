@@ -1,4 +1,6 @@
 import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useFormContext } from 'react-hook-form';
 import type { FormValues } from '../types';
@@ -14,12 +16,12 @@ export default function FormDetailKategori({ wilayahList = [], ekspedisiList = [
   const isManual = watchKategori === 'IoT Manual' || watchKategori === 'Timbangan Manual';
   
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-              <div className="bg-[#eef5f5] px-6 py-3 border-b border-gray-200 flex items-center gap-2 text-teal-800 font-semibold">
+    <Card className="overflow-hidden shadow-sm">
+              <CardHeader className="bg-[#eef5f5] px-6 py-3 border-b flex flex-row items-center gap-2 space-y-0 text-teal-800 font-semibold">
                 <span className="w-5 h-5 rounded-full border-2 border-current flex items-center justify-center text-xs">i</span>
-                Detail {watchKategori}
-              </div>
-              <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                <CardTitle className="text-base font-semibold">Detail {watchKategori}</CardTitle>
+              </CardHeader>
+              <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
 
                 
 
@@ -205,7 +207,7 @@ export default function FormDetailKategori({ wilayahList = [], ekspedisiList = [
                      <Input type="text" placeholder="Masukkan Nomor" {...register("nomorFormulirBerlangganan")}  />
                    </div>
                 )}
-              </div>
-            </div>
+              </CardContent>
+            </Card>
   );
 }

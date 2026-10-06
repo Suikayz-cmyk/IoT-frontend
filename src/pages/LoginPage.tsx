@@ -5,6 +5,7 @@ import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
 import illustrationImg from '@/assets/login-illustration.png'
 import { authApi } from '@/api/auth'
+import { toast } from "sonner";
 
 type ViewMode = 'login' | 'forgot' | 'reset' | 'register'
 
@@ -48,7 +49,7 @@ export default function LoginPage() {
         if (role) localStorage.setItem('userRole', role)
         navigate('/dashboard')
       } else {
-        alert('Login gagal: Token tidak ditemukan dalam response server.')
+        toast.error('Login gagal: Token tidak ditemukan dalam response server.')
       }
     },
     onError: (error: unknown) => {
@@ -58,7 +59,7 @@ export default function LoginPage() {
       } else if (error instanceof Error) {
         msg = error.message
       }
-      alert('Login gagal: ' + msg)
+      toast.error('Login gagal: ' + msg)
     }
   })
 
@@ -72,7 +73,7 @@ export default function LoginPage() {
       return response.data
     },
     onSuccess: () => {
-      alert('Registrasi berhasil! Silakan login menggunakan akun baru Anda.')
+      toast.success('Registrasi berhasil! Silakan login menggunakan akun baru Anda.')
       setView('login')
     },
     onError: (error: unknown) => {
@@ -82,7 +83,7 @@ export default function LoginPage() {
       } else if (error instanceof Error) {
         msg = error.message
       }
-      alert('Registrasi gagal: ' + msg)
+      toast.error('Registrasi gagal: ' + msg)
     }
   })
 
@@ -92,24 +93,24 @@ export default function LoginPage() {
       if (data.reset_token_dev) {
         setResetToken(data.reset_token_dev)
         setView('reset')
-        alert('Link reset/token berhasil didapatkan (Mode Dev). Silakan masukkan password baru Anda.')
+        toast.success('Link reset/token berhasil didapatkan (Mode Dev). Silakan masukkan password baru Anda.')
       } else {
-        alert('Cek email Anda untuk link reset password.')
+        toast('Cek email Anda untuk link reset password.')
         setView('login')
       }
     },
-    onError: (err) => alert(axios.isAxiosError(err) ? err.response?.data?.message : err.message)
+    onError: (err) => toast.error(axios.isAxiosError(err) ? err.response?.data?.message : err.message)
   })
 
   const resetMutation = useMutation({
     mutationFn: () => authApi.resetPassword(resetToken, newPassword),
     onSuccess: () => {
-      alert('Password berhasil diubah!')
+      toast.success('Password berhasil diubah!')
       setView('login')
       setNewPassword('')
       setResetToken('')
     },
-    onError: (err) => alert(axios.isAxiosError(err) ? err.response?.data?.message : err.message)
+    onError: (err) => toast.error(axios.isAxiosError(err) ? err.response?.data?.message : err.message)
   })
 
   const handleLoginSubmit = (e: React.FormEvent) => {
@@ -129,7 +130,7 @@ export default function LoginPage() {
   const handleResetSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (newPassword.length < 8) {
-      alert('Password baru harus minimal 8 karakter!')
+      toast.error('Password baru harus minimal 8 karakter!')
       return
     }
     resetMutation.mutate()

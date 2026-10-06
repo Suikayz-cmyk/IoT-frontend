@@ -1,4 +1,5 @@
 import { Input } from '@/components/ui/input';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Button } from '@/components/ui/button';
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -8,7 +9,76 @@ import { useQuery, useMutation } from '@tanstack/react-query'
 import { pemesananApi } from '@/api/pemesanan'
 import { formatDate } from '@/utils/formatters'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { toast } from "sonner";
 
+
+
+const DeleteButton = ({ onConfirm, isPending }: { onConfirm: () => void, isPending: boolean }) => (
+  <AlertDialog>
+    <AlertDialogTrigger asChild>
+      <Button variant="outline" disabled={isPending} className="text-red-600 hover:bg-red-50 p-1.5 rounded transition-colors disabled:opacity-50" title="Hapus Data">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+      </Button>
+    </AlertDialogTrigger>
+    <AlertDialogContent>
+      <AlertDialogHeader>
+        <AlertDialogTitle>Konfirmasi Hapus</AlertDialogTitle>
+        <AlertDialogDescription>Yakin ingin menghapus pesanan ini beserta semua data terkait?</AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel>Batal</AlertDialogCancel>
+        <AlertDialogAction onClick={onConfirm} className="bg-red-600 hover:bg-red-700">Hapus</AlertDialogAction>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
+)
+
+const StatusSelect = ({ currentStatus, onStatusChange, getStatusStyles, options, title }: { currentStatus: string, onStatusChange: (v: string) => void, getStatusStyles: (s: string) => string, options: React.ReactNode, title?: string }) => {
+  const [pendingStatus, setPendingStatus] = useState<string | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setPendingStatus(e.target.value);
+    setIsOpen(true);
+  };
+
+  const confirmChange = () => {
+    if (pendingStatus) onStatusChange(pendingStatus);
+    setIsOpen(false);
+  };
+
+  const cancelChange = () => {
+    setPendingStatus(null);
+    setIsOpen(false);
+  };
+
+  return (
+    <>
+      <div className="relative inline-flex items-center">
+        <select 
+          value={currentStatus} 
+          onChange={handleSelect}
+          className={`cursor-pointer appearance-none focus:outline-none capitalize pl-2.5 pr-7 py-1 text-xs font-semibold rounded-full transition-colors ${getStatusStyles(currentStatus)}`}
+        >
+          {options}
+        </select>
+        <ChevronDown className="absolute right-2 w-3.5 h-3.5 pointer-events-none opacity-60" />
+      </div>
+      <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Konfirmasi Ubah {title || 'Status'}</AlertDialogTitle>
+            <AlertDialogDescription>Yakin ingin mengubah status menjadi '{pendingStatus}'?</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={cancelChange}>Batal</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmChange}>Ya, Ubah</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  );
+}
 
 export default function PemesananList() {
   const navigate = useNavigate()
@@ -23,18 +93,18 @@ export default function PemesananList() {
   
   const deleteMut = useMutation({
     mutationFn: pemesananApi.delete,
-    onSuccess: () => { refetch(); alert('Data pesanan berhasil dihapus!'); },
+    onSuccess: () => { refetch(); toast.success('Data pesanan berhasil dihapus!'); },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (err: any) => {
       const msg = err.response?.data?.error || err.message;
-      alert('Gagal menghapus: ' + msg);
+      toast.error('Gagal menghapus: ' + msg);
     }
   })
 
   const updateStatusMut = useMutation({
     mutationFn: (data: { id: string, field: 'status' | 'status_odoo', value: string }) => pemesananApi.updateOrderStatus(data.id, data.field, data.value),
     onSuccess: () => refetch(),
-    onError: (err: Error) => alert('Gagal update status: ' + err.message)
+    onError: (err: Error) => toast.error('Gagal update status: ' + err.message)
   })
 
     const exportMut = useMutation({
@@ -53,11 +123,7 @@ export default function PemesananList() {
     }
   })
 
-  const handleDelete = (id: string, kategori: string) => {
-    if (confirm('Yakin ingin menghapus pesanan ini beserta semua data terkait?')) {
-      deleteMut.mutate({ id, kategori })
-    }
-  }
+
 
   const filteredData = pemesananList?.filter(item => 
     item.kodePemesanan.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -151,44 +217,38 @@ export default function PemesananList() {
                     </TableCell>
                     
                     <TableCell className="py-3 px-5 text-center">
-                      <div className="relative inline-flex items-center">
-                        <select
-                          value={(item.statusPesanan || '').toLowerCase()}
-                          onChange={(e) => {
-                            if (window.confirm(`Yakin ingin mengubah status pesanan menjadi '${e.target.value}'?`)) {
-                              updateStatusMut.mutate({ id: item.id as string, field: 'status', value: e.target.value })
-                            }
-                          }}
-                          className={`cursor-pointer appearance-none focus:outline-none capitalize pl-2.5 pr-7 py-1 text-xs font-semibold rounded-full transition-colors ${getStatusStyles(item.statusPesanan)}`}
-                        >
-                          <option className="text-gray-900 bg-white" value="">Pilih Status</option>
-                          <option className="text-gray-900 bg-white" value="pending">Pending</option>
-                          <option className="text-gray-900 bg-white" value="baru">Baru</option>
-                          <option className="text-gray-900 bg-white" value="diproses">Diproses</option>
-                          <option className="text-gray-900 bg-white" value="dikirim">Dikirim</option>
-                          <option className="text-gray-900 bg-white" value="selesai">Selesai</option>
-                          <option className="text-gray-900 bg-white" value="batal">Batal</option>
-                        </select>
-                        <ChevronDown className="absolute right-2 w-3.5 h-3.5 pointer-events-none opacity-60" />
-                      </div>
+                      <StatusSelect 
+                        currentStatus={(item.statusPesanan || '').toLowerCase()} 
+                        onStatusChange={(newStatus) => updateStatusMut.mutate({ id: item.id as string, field: 'status', value: newStatus })}
+                        getStatusStyles={getStatusStyles}
+                        title="Status Pesanan"
+                        options={
+                          <>
+                            <option className="text-gray-900 bg-white" value="">Pilih Status</option>
+                            <option className="text-gray-900 bg-white" value="pending">Pending</option>
+                            <option className="text-gray-900 bg-white" value="baru">Baru</option>
+                            <option className="text-gray-900 bg-white" value="diproses">Diproses</option>
+                            <option className="text-gray-900 bg-white" value="dikirim">Dikirim</option>
+                            <option className="text-gray-900 bg-white" value="selesai">Selesai</option>
+                            <option className="text-gray-900 bg-white" value="batal">Batal</option>
+                          </>
+                        }
+                      />
                     </TableCell>
                     <TableCell className="py-3 px-5 text-center">
-                      <div className="relative inline-flex items-center">
-                        <select
-                          value={(item.statusOdoo || '').toLowerCase()}
-                          onChange={(e) => {
-                            if (window.confirm(`Yakin ingin mengubah status Odoo menjadi '${e.target.value}'?`)) {
-                              updateStatusMut.mutate({ id: item.id as string, field: 'status_odoo', value: e.target.value })
-                            }
-                          }}
-                          className={`cursor-pointer appearance-none focus:outline-none capitalize pl-2.5 pr-7 py-1 text-xs font-semibold rounded-full transition-colors ${getStatusStyles(item.statusOdoo)}`}
-                        >
-                          <option className="text-gray-900 bg-white" value="">Pilih Status</option>
-                          <option className="text-gray-900 bg-white" value="draft">Draft</option>
-                          <option className="text-gray-900 bg-white" value="confirmed">Confirmed</option>
-                        </select>
-                        <ChevronDown className="absolute right-2 w-3.5 h-3.5 pointer-events-none opacity-60" />
-                      </div>
+                      <StatusSelect 
+                        currentStatus={(item.statusOdoo || '').toLowerCase()} 
+                        onStatusChange={(newStatus) => updateStatusMut.mutate({ id: item.id as string, field: 'status_odoo', value: newStatus })}
+                        getStatusStyles={getStatusStyles}
+                        title="Status Odoo"
+                        options={
+                          <>
+                            <option className="text-gray-900 bg-white" value="">Pilih Status</option>
+                            <option className="text-gray-900 bg-white" value="draft">Draft</option>
+                            <option className="text-gray-900 bg-white" value="confirmed">Confirmed</option>
+                          </>
+                        }
+                      />
                     </TableCell>
                     <TableCell className="py-3 px-5">{formatDate(item.createdAt)}</TableCell>
                       <TableCell className="py-3 px-5">{formatDate(item.updatedAt)}</TableCell>
@@ -205,13 +265,7 @@ export default function PemesananList() {
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
                       </Button>
-                      <Button variant="outline" onClick={() => handleDelete(item.id, item.kategori)}
-                        disabled={deleteMut.isPending}
-                        className="text-red-600 hover:bg-red-50 p-1.5 rounded transition-colors disabled:opacity-50"
-                        title="Hapus Data"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
-                      </Button>
+                      <DeleteButton onConfirm={() => deleteMut.mutate({ id: item.id, kategori: item.kategori })} isPending={deleteMut.isPending} />
                     </TableCell>
                   </TableRow>
                 ))

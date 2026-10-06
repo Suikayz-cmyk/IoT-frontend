@@ -12,6 +12,7 @@ import PemesananDetail from '@/pages/pemesanan/PemesananDetail'
 
 import SPJAdd from '@/pages/spj/SPJAdd'
 import SPJDetail from '@/pages/spj/SPJDetail'
+import { Toaster } from 'sonner'
 
 export default function App() {
   return (
@@ -34,6 +35,7 @@ export default function App() {
           <Route path="/settings" element={<SettingsPage />} />
         </Route>
       </Routes>
+      <Toaster position="top-center" richColors />
     </BrowserRouter>
   )
 }

@@ -16,6 +16,7 @@ import { formSchema, type FormValues } from './types'
 import FormPemesan from './components/FormPemesan'
 import FormDetailKategori from './components/FormDetailKategori'
 import FormPurchaseOrder from './components/FormPurchaseOrder'
+import { toast } from "sonner";
 
 export default function PemesananAdd() {
   const navigate = useNavigate()
@@ -87,13 +88,13 @@ export default function PemesananAdd() {
     mutationFn: id ? (payload: Omit<PemesananData, 'id'>) => pemesananApi.update(id, payload as Partial<PemesananData>) : pemesananApi.create,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pemesanan'] })
-      alert('Data berhasil disimpan!')
+      toast.success('Data berhasil disimpan!')
       navigate('/pemesanan')
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (err: any) => {
       const backendError = err.response?.data?.error || err.message;
-      alert('Gagal menyimpan data: ' + backendError)
+      toast.error('Gagal menyimpan data: ' + backendError)
     }
   })
 

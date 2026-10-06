@@ -10,6 +10,7 @@ import { spjApi } from '@/api/spj'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import CustomDatePicker from '@/components/ui/CustomDatePicker'
+import { toast } from "sonner";
 
 export default function SPJAdd() {
   const navigate = useNavigate()
@@ -103,10 +104,10 @@ export default function SPJAdd() {
     mutationFn: id ? (payload: any) => spjApi.update(id, payload) : spjApi.create,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['spj'] })
-      alert('Data SPJ berhasil disimpan!')
+      toast.success('Data SPJ berhasil disimpan!')
       navigate('/spj')
     },
-    onError: (err) => alert('Gagal menyimpan data SPJ: ' + (err as Error).message)
+    onError: (err) => toast.error('Gagal menyimpan data SPJ: ' + (err as Error).message)
   })
 
   const handleSubmit = (e: React.FormEvent) => {

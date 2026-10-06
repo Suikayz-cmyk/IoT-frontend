@@ -4,6 +4,7 @@ import { authApi } from '@/api/auth'
 import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
 import { ImagePlus } from 'lucide-react'
+import { toast } from "sonner";
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState('account')
@@ -25,23 +26,23 @@ export default function SettingsPage() {
       if (data.reset_token_dev) {
         setResetToken(data.reset_token_dev)
         setResetStep(2)
-        alert('Link reset/token berhasil didapatkan (Mode Dev). Silakan masukkan password baru Anda.')
+        toast.success('Link reset/token berhasil didapatkan (Mode Dev). Silakan masukkan password baru Anda.')
       } else {
-        alert('Cek email Anda untuk link reset password.')
+        toast('Cek email Anda untuk link reset password.')
       }
     },
-    onError: (err) => alert(axios.isAxiosError(err) ? err.response?.data?.message : err.message)
+    onError: (err) => toast.error(axios.isAxiosError(err) ? err.response?.data?.message : err.message)
   })
 
   const resetMutation = useMutation({
     mutationFn: () => authApi.resetPassword(resetToken, newPassword),
     onSuccess: () => {
-      alert('Password berhasil diubah!')
+      toast.success('Password berhasil diubah!')
       setResetStep(1)
       setNewPassword('')
       setResetToken('')
     },
-    onError: (err) => alert(axios.isAxiosError(err) ? err.response?.data?.message : err.message)
+    onError: (err) => toast.error(axios.isAxiosError(err) ? err.response?.data?.message : err.message)
   })
 
   const handleForgotPassword = () => {
@@ -51,7 +52,7 @@ export default function SettingsPage() {
   const handleResetPassword = (e: React.FormEvent) => {
     e.preventDefault()
     if (newPassword.length < 8) {
-      alert('Password baru harus minimal 8 karakter!')
+      toast.error('Password baru harus minimal 8 karakter!')
       return
     }
     resetMutation.mutate()
@@ -59,7 +60,7 @@ export default function SettingsPage() {
 
   const handleUpdateProfile = (e: React.FormEvent) => {
     e.preventDefault()
-    alert('Update Profile ditekan. Fitur ini akan mengupdate nama pengguna.')
+    toast('Update Profile ditekan. Fitur ini akan mengupdate nama pengguna.')
   }
 
   return (

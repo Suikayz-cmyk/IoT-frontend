@@ -1,3 +1,4 @@
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Button } from '@/components/ui/button';
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -5,8 +6,28 @@ import DashboardLayout from '@/components/layout/DashboardLayout'
 import { Trash2, Plus, Edit2, X } from 'lucide-react'
 import { masterApi } from '@/api/masterApi'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { toast } from "sonner";
 
 type TabType = 'instansi' | 'pic' | 'ekspedisi' | 'wilayah'
+
+
+const DeleteButton = ({ onConfirm }: { onConfirm: () => void }) => (
+  <AlertDialog>
+    <AlertDialogTrigger asChild>
+      <Button variant="outline" className="text-red-500 hover:bg-red-50 p-1.5 rounded"><Trash2 size={16}/></Button>
+    </AlertDialogTrigger>
+    <AlertDialogContent>
+      <AlertDialogHeader>
+        <AlertDialogTitle>Konfirmasi Hapus</AlertDialogTitle>
+        <AlertDialogDescription>Yakin ingin menghapus data ini?</AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel>Batal</AlertDialogCancel>
+        <AlertDialogAction onClick={onConfirm} className="bg-red-600 hover:bg-red-700">Hapus</AlertDialogAction>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
+)
 
 export default function MasterData() {
   const [activeTab, setActiveTab] = useState<TabType>('instansi')
@@ -50,7 +71,7 @@ export default function MasterData() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onError = (err: any) => {
     const msg = err?.response?.data?.message || err?.response?.data?.error || err?.message
-    alert('Gagal menyimpan data: ' + msg)
+    toast.error('Gagal menyimpan data: ' + msg)
   }
 
   // Add Mutations
@@ -182,7 +203,7 @@ export default function MasterData() {
                     <TableCell className="px-4 py-3 text-xs">{item.provinsi}</TableCell>
                     <TableCell className="px-4 py-3 text-center flex items-center justify-center gap-2">
                       <Button variant="outline" onClick={() => openEditModal(item)} className="text-blue-500 hover:bg-blue-50 p-1.5 rounded"><Edit2 size={16}/></Button>
-                      <Button variant="outline" onClick={() => { if(confirm('Yakin ingin menghapus?')) delInstansiMut.mutate(item.id) }} className="text-red-500 hover:bg-red-50 p-1.5 rounded"><Trash2 size={16}/></Button>
+                      <DeleteButton onConfirm={() => delInstansiMut.mutate(item.id)} />
                     </TableCell>
                   </TableRow>
                 ))}
@@ -198,7 +219,7 @@ export default function MasterData() {
                     <TableCell className="px-4 py-3 font-mono text-xs text-gray-600">{item.noTelp || '-'}</TableCell>
                     <TableCell className="px-4 py-3 text-center flex items-center justify-center gap-2">
                       <Button variant="outline" onClick={() => openEditModal(item)} className="text-blue-500 hover:bg-blue-50 p-1.5 rounded"><Edit2 size={16}/></Button>
-                      <Button variant="outline" onClick={() => { if(confirm('Yakin ingin menghapus?')) delPICMut.mutate(item.id) }} className="text-red-500 hover:bg-red-50 p-1.5 rounded"><Trash2 size={16}/></Button>
+                      <DeleteButton onConfirm={() => delPICMut.mutate(item.id)} />
                     </TableCell>
                   </TableRow>
                 ))}
@@ -210,7 +231,7 @@ export default function MasterData() {
                     <TableCell className="px-4 py-3 font-medium text-gray-800">{item.namaEkspedisi}</TableCell>
                     <TableCell className="px-4 py-3 text-center flex items-center justify-center gap-2">
                       <Button variant="outline" onClick={() => openEditModal(item)} className="text-blue-500 hover:bg-blue-50 p-1.5 rounded"><Edit2 size={16}/></Button>
-                      <Button variant="outline" onClick={() => { if(confirm('Yakin ingin menghapus?')) delEkspedisiMut.mutate(item.id) }} className="text-red-500 hover:bg-red-50 p-1.5 rounded"><Trash2 size={16}/></Button>
+                      <DeleteButton onConfirm={() => delEkspedisiMut.mutate(item.id)} />
                     </TableCell>
                   </TableRow>
                 ))}
@@ -224,7 +245,7 @@ export default function MasterData() {
                     <TableCell className="px-4 py-3 text-xs text-gray-500">{item.alamat || '-'}</TableCell>
                     <TableCell className="px-4 py-3 text-center flex items-center justify-center gap-2">
                       <Button variant="outline" onClick={() => openEditModal(item)} className="text-blue-500 hover:bg-blue-50 p-1.5 rounded"><Edit2 size={16}/></Button>
-                      <Button variant="outline" onClick={() => { if(confirm('Yakin ingin menghapus?')) delWilayahMut.mutate(item.id) }} className="text-red-500 hover:bg-red-50 p-1.5 rounded"><Trash2 size={16}/></Button>
+                      <DeleteButton onConfirm={() => delWilayahMut.mutate(item.id)} />
                     </TableCell>
                   </TableRow>
                 ))}

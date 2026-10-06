@@ -1,4 +1,5 @@
 import { Input } from '@/components/ui/input';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Button } from '@/components/ui/button';
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -8,7 +9,76 @@ import { useQuery, useMutation } from '@tanstack/react-query'
 import { spjApi } from '@/api/spj'
 import { formatDate } from '@/utils/formatters'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { toast } from "sonner";
 
+
+
+const DeleteButton = ({ onConfirm, isPending }: { onConfirm: () => void, isPending: boolean }) => (
+  <AlertDialog>
+    <AlertDialogTrigger asChild>
+      <Button variant="outline" disabled={isPending} className="text-red-600 hover:bg-red-50 p-1.5 rounded transition-colors disabled:opacity-50" title="Hapus Data">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+      </Button>
+    </AlertDialogTrigger>
+    <AlertDialogContent>
+      <AlertDialogHeader>
+        <AlertDialogTitle>Konfirmasi Hapus</AlertDialogTitle>
+        <AlertDialogDescription>Yakin ingin menghapus dokumen SPJ ini?</AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel>Batal</AlertDialogCancel>
+        <AlertDialogAction onClick={onConfirm} className="bg-red-600 hover:bg-red-700">Hapus</AlertDialogAction>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
+)
+
+const StatusSelect = ({ currentStatus, onStatusChange, getStatusStyles, options }: { currentStatus: string, onStatusChange: (v: string) => void, getStatusStyles: (s: string) => string, options: React.ReactNode }) => {
+  const [pendingStatus, setPendingStatus] = useState<string | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setPendingStatus(e.target.value);
+    setIsOpen(true);
+  };
+
+  const confirmChange = () => {
+    if (pendingStatus) onStatusChange(pendingStatus);
+    setIsOpen(false);
+  };
+
+  const cancelChange = () => {
+    setPendingStatus(null);
+    setIsOpen(false);
+  };
+
+  return (
+    <>
+      <div className="relative inline-flex items-center">
+        <select 
+          value={currentStatus} 
+          onChange={handleSelect}
+          className={`cursor-pointer appearance-none focus:outline-none capitalize pl-2.5 pr-7 py-1 text-xs font-semibold rounded-full transition-colors ${getStatusStyles(currentStatus)}`}
+        >
+          {options}
+        </select>
+        <ChevronDown className="absolute right-2 w-3.5 h-3.5 pointer-events-none opacity-60" />
+      </div>
+      <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Konfirmasi Ubah Status</AlertDialogTitle>
+            <AlertDialogDescription>Yakin ingin mengubah status menjadi '{pendingStatus}'?</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={cancelChange}>Batal</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmChange}>Ya, Ubah</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  );
+}
 
 export default function SPJPage() {
   const navigate = useNavigate()
@@ -36,20 +106,16 @@ export default function SPJPage() {
   const updateStatusMut = useMutation({
     mutationFn: ({ id, status }: { id: string, status: string }) => spjApi.updateStatus(id, status),
     onSuccess: () => refetch(),
-    onError: (err: Error) => alert('Gagal update status: ' + err.message)
+    onError: (err: Error) => toast.error('Gagal update status: ' + err.message)
   })
 
   const deleteMut = useMutation({
     mutationFn: spjApi.delete,
     onSuccess: () => refetch(),
-    onError: (err: Error) => alert('Gagal menghapus: ' + err.message)
+    onError: (err: Error) => toast.error('Gagal menghapus: ' + err.message)
   })
 
-  const handleDelete = (id: string) => {
-    if (confirm('Yakin ingin menghapus dokumen SPJ ini?')) {
-      deleteMut.mutate(id)
-    }
-  }
+
 
   const filteredData = spjList?.filter(item => 
     item.kodePemesanan?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -60,7 +126,7 @@ export default function SPJPage() {
   return (
     <DashboardLayout 
       title="Data SPJ" 
-      onExport={() => alert('Fitur Export dalam pengembangan')}
+      onExport={() => toast('Fitur Export dalam pengembangan')}
     >
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
 
@@ -122,22 +188,18 @@ export default function SPJPage() {
                     <TableCell className="py-3 px-5 text-gray-600">{item.picPrint}</TableCell>
                     <TableCell className="py-3 px-5 text-gray-600">{formatDate(item.tglPengiriman)}</TableCell>
                     <TableCell className="py-3 px-5">
-                      <div className="relative inline-flex items-center">
-                        <select 
-                          value={(item.statusPesanan || '').toLowerCase()} 
-                          onChange={(e) => {
-                            if (window.confirm(`Yakin ingin mengubah status SPJ menjadi '${e.target.value}'?`)) {
-                              updateStatusMut.mutate({ id: item.id, status: e.target.value })
-                            }
-                          }}
-                          className={`cursor-pointer appearance-none focus:outline-none capitalize pl-2.5 pr-7 py-1 text-xs font-semibold rounded-full transition-colors ${getStatusStyles(item.statusPesanan)}`}
-                        >
-                          <option className="text-gray-900 bg-white" value="">Pilih Status</option>
-                          <option className="text-gray-900 bg-white" value="diproses">Diproses</option>
-                          <option className="text-gray-900 bg-white" value="selesai">Selesai</option>
-                        </select>
-                        <ChevronDown className="absolute right-2 w-3.5 h-3.5 pointer-events-none opacity-60" />
-                      </div>
+                      <StatusSelect 
+                        currentStatus={(item.statusPesanan || '').toLowerCase()} 
+                        onStatusChange={(newStatus) => updateStatusMut.mutate({ id: item.id, status: newStatus })}
+                        getStatusStyles={getStatusStyles}
+                        options={
+                          <>
+                            <option className="text-gray-900 bg-white" value="">Pilih Status</option>
+                            <option className="text-gray-900 bg-white" value="diproses">Diproses</option>
+                            <option className="text-gray-900 bg-white" value="selesai">Selesai</option>
+                          </>
+                        }
+                      />
                     </TableCell>
                     <TableCell className="py-3 px-5 text-center flex items-center justify-center gap-1">
                       <Button variant="outline" onClick={() => navigate(`/spj/${item.id}`)}
@@ -152,13 +214,7 @@ export default function SPJPage() {
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
                       </Button>
-                      <Button variant="outline" onClick={() => handleDelete(item.id)}
-                        disabled={deleteMut.isPending}
-                        className="text-red-600 hover:bg-red-50 p-1.5 rounded transition-colors disabled:opacity-50"
-                        title="Hapus Data"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
-                      </Button>
+                      <DeleteButton onConfirm={() => deleteMut.mutate(item.id)} isPending={deleteMut.isPending} />
                     </TableCell>
                   </TableRow>
                 ))

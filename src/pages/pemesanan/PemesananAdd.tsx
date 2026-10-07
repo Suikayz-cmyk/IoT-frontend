@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-﻿import { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -126,7 +126,7 @@ export default function PemesananAdd() {
       
       <div className="mb-6 flex items-center gap-4 sticky top-0 bg-[#f8f9fa] z-10 pt-4 pb-4 border-b border-gray-100">
         <Button variant="outline" onClick={() => navigate('/pemesanan')}
-          className="p-2 bg-white rounded-full border border-gray-200 hover:bg-gray-50 text-gray-600 transition-colors inline-flex shadow-sm"
+          className="p-2 bg-white !rounded-full border border-gray-200 hover:bg-gray-50 text-gray-600 transition-colors inline-flex shadow-sm"
           title="Kembali"
         >
           <ChevronLeft size={20} />

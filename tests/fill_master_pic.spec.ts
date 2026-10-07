@@ -1,4 +1,4 @@
-﻿import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 import { fakerID_ID as faker } from '@faker-js/faker';
 
 test('Auto-fill Master PIC', async ({ page }) => {

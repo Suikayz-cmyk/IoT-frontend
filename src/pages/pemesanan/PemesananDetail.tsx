@@ -1,6 +1,5 @@
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useParams, useNavigate } from 'react-router-dom'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import { useQuery } from '@tanstack/react-query'
@@ -78,17 +77,17 @@ export default function PemesananDetail() {
 
       <div className="space-y-6 pb-12">
 
-        <Card className="p-6 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
           <ReadOnlyField label="Kategori" value={data.kategori} />
           <ReadOnlyField label="Kode Pemesanan" value={data.kodePemesanan} />
-        </Card>
+        </div>
 
-        <Card className="overflow-hidden shadow-sm">
-          <CardHeader className="bg-[#eef5f5] px-6 py-3 border-b flex flex-row items-center gap-2 space-y-0 text-teal-800 font-semibold">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="bg-[#eef5f5] px-6 py-3 border-b border-gray-200 flex flex-row items-center gap-2 space-y-0 text-teal-800 font-semibold">
             <span className="w-5 h-5 rounded-full border-2 border-current flex items-center justify-center text-xs">i</span>
-            <CardTitle className="text-base font-semibold">Data Pemesan</CardTitle>
-          </CardHeader>
-          <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+            <span className="text-base font-semibold">Data Pemesan</span>
+          </div>
+          <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
             <ReadOnlyField label="Nama Instansi Pemesan" value={data.namaInstansi} />
             <ReadOnlyField label="Nama PIC" value={data.namaPIC} />
             <ReadOnlyField label="Nomor Telepon PIC" value={data.noTelpPIC} />
@@ -98,15 +97,15 @@ export default function PemesananDetail() {
             <ReadOnlyField label="Alamat" value={data.alamat} />
             <ReadOnlyField label="Kota/Kabupaten" value={data.kota} />
             <ReadOnlyField label="Provinsi" value={data.provinsi} />
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card className="overflow-hidden shadow-sm">
-          <CardHeader className="bg-[#eef5f5] px-6 py-3 border-b flex flex-row items-center gap-2 space-y-0 text-teal-800 font-semibold">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="bg-[#eef5f5] px-6 py-3 border-b border-gray-200 flex flex-row items-center gap-2 space-y-0 text-teal-800 font-semibold">
             <span className="w-5 h-5 rounded-full border-2 border-current flex items-center justify-center text-xs">i</span>
-            <CardTitle className="text-base font-semibold">Detail {kategori}</CardTitle>
-          </CardHeader>
-          <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+            <span className="text-base font-semibold">Detail {kategori}</span>
+          </div>
+          <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
             
             {isIoT && (
               <>
@@ -162,15 +161,15 @@ export default function PemesananDetail() {
             {isManual && isIoT && (
                <ReadOnlyField label="Nomor Formulir Berlangganan" value={data.nomorFormulirBerlangganan} />
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card className="overflow-hidden shadow-sm">
-          <CardHeader className="bg-[#eef5f5] px-6 py-3 border-b flex flex-row items-center gap-2 space-y-0 text-teal-800 font-semibold">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="bg-[#eef5f5] px-6 py-3 border-b border-gray-200 flex flex-row items-center gap-2 space-y-0 text-teal-800 font-semibold">
             <span className="w-5 h-5 rounded-full border-2 border-current flex items-center justify-center text-xs">i</span>
-            <CardTitle className="text-base font-semibold">Detail Purchase Order</CardTitle>
-          </CardHeader>
-          <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+            <span className="text-base font-semibold">Detail Purchase Order</span>
+          </div>
+          <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
             <ReadOnlyField label="Tanggal Pesanan PO" value={formatDate(data.tanggalPesananPO)} />
             {isTimbangan && (
               <ReadOnlyField label="Nomor PO KUT" value={data.nomorPOKUT} />
@@ -192,8 +191,8 @@ export default function PemesananDetail() {
             <div className="md:col-span-2">
               <ReadOnlyField label="Keterangan" value={data.keterangan} />
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
       </div>
     </DashboardLayout>

@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 import { fakerID_ID as faker } from '@faker-js/faker';
 
 test('Auto-fill Form IoT Inaproc', async ({ page }) => {
@@ -30,9 +30,11 @@ test('Auto-fill Form IoT Inaproc', async ({ page }) => {
   // Isi Kode Pemesanan
   await page.locator('input[name="kodePemesanan"]').fill(faker.string.alphanumeric(8).toUpperCase());
 
-  // Pilih Instansi (akan otomatis mengisi PIC, NIK, dll)
-  const instansiSelect = page.locator('select[name="instansi"]');
-  await instansiSelect.selectOption({ index: 1 }); // Pilih instansi pertama
+  // Pilih Instansi (menggunakan Combobox Shadcn)
+  const instansiInput = page.locator('label').filter({ hasText: /^Nama Instansi Pemesan/ }).locator('..').locator('input[type="text"]');
+  await instansiInput.click();
+  await page.waitForTimeout(500);
+  await page.locator('.absolute.top-full .cursor-pointer').first().click(); // Pilih instansi pertama
   await page.waitForTimeout(1000); // Tunggu autofill PIC berjalan
 
   // === Detail IoT Inaproc ===

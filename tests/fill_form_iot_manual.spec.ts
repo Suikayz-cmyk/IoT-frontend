@@ -1,4 +1,4 @@
-﻿import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 import { fakerID_ID as faker } from '@faker-js/faker';
 
 test('Auto-fill Form IoT Manual', async ({ page }) => {
@@ -8,7 +8,7 @@ test('Auto-fill Form IoT Manual', async ({ page }) => {
   await page.goto('/login');
   
   page.on('dialog', async (dialog) => {
-    console.log('🚨 MUNCUL ALERT DARI BROWSER:', dialog.message());
+    console.log('?? MUNCUL ALERT DARI BROWSER:', dialog.message());
     await dialog.accept();
   });
 
@@ -30,8 +30,10 @@ test('Auto-fill Form IoT Manual', async ({ page }) => {
   await page.locator('input[name="kodePemesanan"]').fill(faker.string.alphanumeric(8).toUpperCase());
 
   // Pilih Instansi (akan otomatis mengisi PIC, NIK, dll)
-  const instansiSelect = page.locator('select[name="instansi"]');
-  await instansiSelect.selectOption({ index: 1 }); 
+  const instansiInput = page.locator('label').filter({ hasText: /^Nama Instansi Pemesan/ }).locator('..').locator('input[type="text"]');
+  await instansiInput.click();
+  await page.waitForTimeout(500);
+  await page.locator('.absolute.top-full .cursor-pointer').first().click(); 
   await page.waitForTimeout(1000); 
 
   // === Detail IoT (isIoT) ===

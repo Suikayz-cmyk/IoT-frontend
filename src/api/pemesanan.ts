@@ -87,10 +87,26 @@ const buildPayloadAndEndpoint = async (payload: Partial<PemesananData>) => {
   let endpoint: string;
   let payloadData: any;
 
+  const parsedInstansiId = (payload.namaInstansi && !isNaN(Number(payload.namaInstansi))) ? Number(payload.namaInstansi) : 0;
+  const parsedPicId = (payload.namaPIC && !isNaN(Number(payload.namaPIC))) ? Number(payload.namaPIC) : 0;
+
   const baseOrder = {
     kode_order: payload.kodePemesanan || "",
-    instansi_id: (payload.namaInstansi && !isNaN(Number(payload.namaInstansi))) ? Number(payload.namaInstansi) : null,
-    pic_id: (payload.namaPIC && !isNaN(Number(payload.namaPIC))) ? Number(payload.namaPIC) : null,
+    instansi_id: parsedInstansiId,
+    instansi: parsedInstansiId === 0 && payload.namaInstansi ? {
+      nama_instansi: payload.namaInstansi,
+      npwp: payload.noNPWP || null,
+      alamat: payload.alamat || null,
+      kota_kab: payload.kota || null,
+      provinsi: payload.provinsi || null
+    } : undefined,
+    pic_id: parsedPicId,
+    pic: parsedPicId === 0 && payload.namaPIC ? {
+      nama_pic: payload.namaPIC,
+      no_hp: payload.noTelpPIC || null,
+      email: payload.emailPIC || null,
+      nik: payload.nikPIC || null
+    } : undefined,
     status: payload.statusPesanan || "diproses",
     status_odoo: payload.statusOdoo || "",
     nsfp: payload.nsfp || "",
@@ -102,7 +118,7 @@ const buildPayloadAndEndpoint = async (payload: Partial<PemesananData>) => {
     tanggal_bast: payload.tanggalBAST || null,
   };
 
-  let validProdukId = 1;
+  let validProdukId: number;
   try {
     const produkRes = await axios.get("/api/produk", { headers: getAuthHeaders() });
     if (produkRes.data?.data && produkRes.data.data.length > 0) {
@@ -124,9 +140,12 @@ const buildPayloadAndEndpoint = async (payload: Partial<PemesananData>) => {
       }
 
       validProdukId = selectedProduct.id;
+    } else {
+      throw new Error("No products found from backend");
     }
   } catch(e) {
-    console.warn("Gagal mengambil list produk dummy", e);
+    console.warn("Gagal mengambil list produk", e);
+    throw new Error("Gagal mengambil produk dari backend", { cause: e });
   }
 
   const items = [{
@@ -137,10 +156,24 @@ const buildPayloadAndEndpoint = async (payload: Partial<PemesananData>) => {
     subtotal: parseRupiah(payload.hargaPPN)
   }];
 
+  let paymentStatus = "LUNAS";
+  try {
+    const optionsRes = await axios.get("/api/options", { headers: getAuthHeaders() });
+    if (optionsRes.data?.data) {
+      const paymentOptions = optionsRes.data.data.filter((opt: any) => opt.kategori === 'PAYMENT_STATUS');
+      const lunasOpt = paymentOptions.find((opt: any) => String(opt.label).toUpperCase() === 'LUNAS' || String(opt.value).toUpperCase() === 'LUNAS');
+      if (lunasOpt) {
+        paymentStatus = lunasOpt.value || lunasOpt.label || "LUNAS";
+      }
+    }
+  } catch (e) {
+    console.warn("Gagal mengambil payment status options", e);
+  }
+
   const payment = (payload.tanggalUangMasuk || payload.jumlahUangMasuk || payload.rekeningPenerima) ? {
     jumlah_uang_masuk: parseRupiah(payload.jumlahUangMasuk),
     tanggal_uang_masuk: payload.tanggalUangMasuk || null,
-    status: "LUNAS",
+    status: paymentStatus,
     rekening: payload.rekeningPenerima || "",
   } : null;
 
@@ -408,16 +441,12 @@ export const pemesananApi = {
   },
 
   updateOrderStatus: async (id: string, field: 'status' | 'status_odoo', value: string): Promise<void> => {
-    const headers = getAuthHeaders();
-    const ordersRes = await axios.get('/api/orders', { headers });
-    const orders = ordersRes.data.data || [];
-    const fullOrder = orders.find((o: any) => String(o.id) === String(id));
-    if (!fullOrder) throw new Error("Order not found");
+    let finalValue = value;
+    if (field === 'status' && value.toLowerCase() === 'dikirim') {
+      finalValue = 'Dikirim';
+    }
     
-    if (field === 'status') fullOrder.status = value;
-    if (field === 'status_odoo') fullOrder.status_odoo = value;
-    
-    await axios.put(`/api/orders/${id}`, fullOrder, { headers });
+    await axios.put(`/api/orders/${id}`, { [field]: finalValue }, { headers: getAuthHeaders() });
   },
 
   delete: async ({ id, kategori }: { id: string, kategori: string }): Promise<void> => {

@@ -150,20 +150,20 @@ export default function SPJPage() {
         </div>
 
         <div className="overflow-x-auto min-h-100">
-          <Table className="w-full text-left border-collapse min-w-200">
+          <Table className="w-full text-left border-collapse min-w-200" style={{ zoom: "0.9" }}>
             <TableHeader>
-              <TableRow className="bg-gray-50 border-b border-gray-200 text-sm text-gray-500">
-                <TableHead className="py-3 px-5 font-medium whitespace-nowrap">Kode SPJ</TableHead>
-                <TableHead className="py-3 px-5 font-medium">Instansi</TableHead>
-                <TableHead className="py-3 px-5 font-medium">Kebutuhan SPJ</TableHead>
-                <TableHead className="py-3 px-5 font-medium">Tgl Print</TableHead>
-                <TableHead className="py-3 px-5 font-medium">PIC Print</TableHead>
-                <TableHead className="py-3 px-5 font-medium">Tgl Pengiriman</TableHead>
-                <TableHead className="py-3 px-5 font-medium">Status Pesanan</TableHead>
-                <TableHead className="py-3 px-5 font-medium text-center">Aksi</TableHead>
+              <TableRow className="bg-gray-50 border-b border-gray-200 text-[13px] text-gray-500">
+                <TableHead className="py-2.5 px-3 font-medium whitespace-nowrap text-center">Kode SPJ</TableHead>
+                <TableHead className="py-2.5 px-3 font-medium text-center">Instansi</TableHead>
+                <TableHead className="py-2.5 px-3 font-medium text-center">Kebutuhan SPJ</TableHead>
+                <TableHead className="py-2.5 px-3 font-medium text-center">Tgl Print</TableHead>
+                <TableHead className="py-2.5 px-3 font-medium text-center">PIC Print</TableHead>
+                <TableHead className="py-2.5 px-3 font-medium text-center">Tgl Pengiriman</TableHead>
+                <TableHead className="py-2.5 px-3 font-medium text-center">Status Pesanan</TableHead>
+                <TableHead className="py-2.5 px-3 font-medium text-center">Aksi</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody className="divide-y divide-gray-200 text-sm text-gray-700">
+            <TableBody className="divide-y divide-gray-200 text-[13px] text-gray-700">
               {isLoading ? (
                 <TableRow>
                   <TableCell colSpan={8} className="py-8 text-center text-gray-500">Memuat data...</TableCell>
@@ -175,19 +175,19 @@ export default function SPJPage() {
               ) : (
                 filteredData.map((item) => (
                   <TableRow key={item.id} className="hover:bg-gray-50 transition-colors">
-                    <TableCell className="py-3 px-5 font-medium text-gray-900">
+                    <TableCell className="py-2.5 px-3 font-medium text-gray-900 whitespace-nowrap">
                       <div>{item.kodePemesanan || `SPJ-${item.id}`}</div>
                       <div className="text-xs text-gray-500">{formatDate(item.tanggalOrder)}</div>
                     </TableCell>
-                    <TableCell className="py-3 px-5">
-                      <div className="font-medium text-gray-800">{item.namaInstansi || `Instansi ID: ${item.namaInstansi}`}</div>
-                      <div className="text-xs text-gray-500">PIC: {item.namaPIC || '-'}</div>
+                    <TableCell className="py-2.5 px-3 max-w-50 truncate" title={item.namaInstansi || `Instansi ID: ${item.namaInstansi}`}>
+                      <div className="font-medium text-gray-800 truncate">{item.namaInstansi || `Instansi ID: ${item.namaInstansi}`}</div>
+                      <div className="text-xs text-gray-500 truncate">PIC: {item.namaPIC || '-'}</div>
                     </TableCell>
-                    <TableCell className="py-3 px-5 font-medium text-gray-700">{item.kebutuhanSPJ}</TableCell>
-                    <TableCell className="py-3 px-5 text-gray-600">{formatDate(item.tglPrint)}</TableCell>
-                    <TableCell className="py-3 px-5 text-gray-600">{item.picPrint}</TableCell>
-                    <TableCell className="py-3 px-5 text-gray-600">{formatDate(item.tglPengiriman)}</TableCell>
-                    <TableCell className="py-3 px-5">
+                    <TableCell className="py-2.5 px-3 font-medium text-gray-700 whitespace-nowrap">{item.kebutuhanSPJ}</TableCell>
+                    <TableCell className="py-2.5 px-3 text-center text-gray-600 whitespace-nowrap">{formatDate(item.tglPrint)}</TableCell>
+                    <TableCell className="py-2.5 px-3 text-gray-600 whitespace-nowrap">{item.picPrint}</TableCell>
+                    <TableCell className="py-2.5 px-3 text-center text-gray-600 whitespace-nowrap">{formatDate(item.tglPengiriman)}</TableCell>
+                    <TableCell className="py-2.5 px-3 text-center whitespace-nowrap">
                       <StatusSelect 
                         currentStatus={(item.statusPesanan || '').toLowerCase()} 
                         onStatusChange={(newStatus) => updateStatusMut.mutate({ id: item.id, status: newStatus })}
@@ -201,7 +201,7 @@ export default function SPJPage() {
                         }
                       />
                     </TableCell>
-                    <TableCell className="py-3 px-5 text-center flex items-center justify-center gap-1">
+                    <TableCell className="py-2.5 px-3 text-center flex items-center justify-center gap-1">
                       <Button variant="outline" onClick={() => navigate(`/spj/${item.id}`)}
                         className="text-blue-600 hover:bg-blue-50 p-1.5 rounded transition-colors"
                         title="Lihat Detail"

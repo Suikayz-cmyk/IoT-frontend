@@ -1,4 +1,4 @@
-﻿import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 import { fakerID_ID as faker } from '@faker-js/faker';
 
 test('Auto-fill Form RCW-360 PRO HYBRID (GSM+WIFI)', async ({ page }) => {
@@ -29,18 +29,20 @@ test('Auto-fill Form RCW-360 PRO HYBRID (GSM+WIFI)', async ({ page }) => {
   await page.locator('input[name="kodePemesanan"]').fill(faker.string.alphanumeric(8).toUpperCase());
 
   // Pilih Instansi (akan otomatis mengisi PIC, NIK, dll)
-  const instansiSelect = page.locator('select[name="instansi"]');
-  await instansiSelect.selectOption({ index: 1 }); 
+  const instansiInput = page.locator('label').filter({ hasText: /^Nama Instansi Pemesan/ }).locator('..').locator('input[type="text"]');
+  await instansiInput.click();
+  await page.waitForTimeout(500);
+  await page.locator('.absolute.top-full .cursor-pointer').first().click(); 
   await page.waitForTimeout(1000); 
 
   // === Detail Kategori (isTimbangan) ===
   await page.locator('input[name="quantity"]').fill(faker.number.int({ min: 1, max: 10 }).toString());
-  await page.locator('select[name="tipeTimbangan"]').selectOption('1 Kg');
+  await page.locator('select[name="tipeTimbangan"]').selectOption('Sonic Opsi A');
   await page.locator('input[name="nomorPenyampaianDaftarHarga"]').fill(faker.string.alphanumeric(8).toUpperCase());
   await page.locator('input[name="nomorFormulirPembelian"]').fill(faker.string.alphanumeric(8).toUpperCase());
   
   await page.locator('select[name="wilayahPengiriman"]').selectOption({ index: 1 });
-  await page.locator('input[name="berat"]').fill(faker.number.int({ min: 1, max: 50 }).toString());
+  await page.locator('select[name="berat"]').selectOption('1');
   await page.locator('select[name="ekspedisi"]').selectOption({ index: 1 });
   await page.locator('input[name="nomorResi"]').fill(faker.string.alphanumeric(15).toUpperCase());
   

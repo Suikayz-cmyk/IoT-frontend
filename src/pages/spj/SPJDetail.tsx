@@ -1,4 +1,3 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useNavigate, useParams } from 'react-router-dom'
@@ -43,31 +42,31 @@ export default function SPJDetail() {
 
       <div className="space-y-6 pb-12">
         
-        <Card className="p-6 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
           <ReadOnlyField label="Kategori" value={data.kategori} />
-        </Card>
+        </div>
 
-        <Card className="overflow-hidden shadow-sm">
-          <CardHeader className="bg-[#eef5f5] px-6 py-3 border-b flex flex-row items-center gap-2 space-y-0 text-teal-800 font-semibold">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="bg-[#eef5f5] px-6 py-3 border-b border-gray-200 flex flex-row items-center gap-2 space-y-0 text-teal-800 font-semibold">
             <span className="w-5 h-5 rounded-full border-2 border-current flex items-center justify-center text-xs">i</span>
-            <CardTitle className="text-base font-semibold">Data Pemesan</CardTitle>
-          </CardHeader>
-          <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+            <span className="text-base font-semibold">Data Pemesan</span>
+          </div>
+          <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
             <ReadOnlyField label="Nama Instansi Pemesan" value={data.namaInstansi} />
             <ReadOnlyField label="Nama PIC" value={data.namaPIC} helperText="Terisi otomatis dari hasil cek, bisa diubah" />
             <ReadOnlyField label="Nomor Telepon PIC" value={data.noTelpPIC} helperText="Terisi otomatis dari hasil cek, bisa diubah" />
             <ReadOnlyField label="Alamat" value={data.alamat} helperText="Terisi otomatis dari hasil cek, bisa diubah" />
             <ReadOnlyField label="Kota/Kabupaten" value={data.kota} helperText="Terisi otomatis dari hasil cek, bisa diubah" />
             <ReadOnlyField label="Provinsi" value={data.provinsi} helperText="Terisi otomatis dari hasil cek, bisa diubah" />
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card className="overflow-hidden shadow-sm">
-          <CardHeader className="bg-[#eef5f5] px-6 py-3 border-b flex flex-row items-center gap-2 space-y-0 text-teal-800 font-semibold">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="bg-[#eef5f5] px-6 py-3 border-b border-gray-200 flex flex-row items-center gap-2 space-y-0 text-teal-800 font-semibold">
             <span className="w-5 h-5 rounded-full border-2 border-current flex items-center justify-center text-xs">i</span>
-            <CardTitle className="text-base font-semibold">Detail SPJ</CardTitle>
-          </CardHeader>
-          <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+            <span className="text-base font-semibold">Detail SPJ</span>
+          </div>
+          <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
             <ReadOnlyField label="Tanggal Print" value={formatDate(data.tglPrint)} />
             <ReadOnlyField label="Tanggal Update List" value={formatDate(data.tglUpdateList)} />
             <ReadOnlyField label="Tanggal Tanda Tangan" value={formatDate(data.tglTandaTangan)} />
@@ -78,8 +77,8 @@ export default function SPJDetail() {
             <ReadOnlyField label="Jenis Kertas" value={data.jenisKertas} />
             <ReadOnlyField label="Jenis File" value={data.jenisFile} />
             <ReadOnlyField label="PIC Print" value={data.picPrint} />
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
       </div>
     </DashboardLayout>

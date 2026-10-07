@@ -1,27 +1,70 @@
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useEffect } from 'react';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useFormContext } from 'react-hook-form';
 import type { FormValues } from '../types';
 import CustomDatePicker from '@/components/ui/CustomDatePicker';
 
-
+const TIMBANGAN_PRICES: Record<string, { produk: number, reseller: number }> = {
+  "Sonic Opsi A": { produk: 4500000, reseller: 4500000 },
+  "Sonic Opsi B": { produk: 6750000, reseller: 6750000 },
+  "Sonic Opsi C": { produk: 12000000, reseller: 12000000 },
+  "Sonic Opsi D": { produk: 15950000, reseller: 15950000 },
+  "Quattro Opsi A": { produk: 5000000, reseller: 4500000 },
+  "Quattro Opsi B": { produk: 5000000, reseller: 4500000 },
+  "Quattro Opsi C": { produk: 5000000, reseller: 4500000 },
+};
 
 export default function FormDetailKategori({ wilayahList = [], ekspedisiList = [] }: { wilayahList?: any[], ekspedisiList?: any[] }) {
-  const { register, watch } = useFormContext<FormValues>();
+  const { register, watch, setValue } = useFormContext<FormValues>();
   const watchKategori = watch("kategori");
   const isTimbangan = watchKategori === 'Timbangan Inaproc' || watchKategori === 'Timbangan Manual' || watchKategori?.startsWith('RCW');
   const isIoT = watchKategori === 'IoT Inaproc' || watchKategori === 'IoT Manual';
   const isManual = watchKategori === 'IoT Manual' || watchKategori === 'Timbangan Manual';
   
+  const watchTipeTimbangan = watch("tipeTimbangan");
+  const watchOngkirKUT = watch("ongkirKUT");
+  const watchQuantity = watch("quantity");
+
+  useEffect(() => {
+    if (isTimbangan && watchTipeTimbangan && TIMBANGAN_PRICES[watchTipeTimbangan]) {
+      const p = TIMBANGAN_PRICES[watchTipeTimbangan];
+      const ongkirStr = String(watchOngkirKUT || '0').replace(/\./g, "").replace(/,/g, "").replace(/[^0-9.-]+/g, "");
+      const ongkir = parseFloat(ongkirStr) || 0;
+      
+      const qtyStr = String(watchQuantity || '1').replace(/[^0-9.-]+/g, "");
+      const qty = parseFloat(qtyStr) || 1;
+
+      const baseProduk = p.produk * qty;
+      const baseReseller = p.reseller * qty;
+
+      const ppn11 = baseProduk * 0.11;
+      const ppnOngkir = ongkir * 0.11;
+      
+      setValue("harga", String(baseProduk));
+      setValue("ppn11", String(ppn11));
+      setValue("hargaPPN11Ongkir", String(ppnOngkir));
+      setValue("totalHargaOngkir", String(baseProduk + ongkir));
+      setValue("totalHargaJual", String(baseProduk + ppn11 + ongkir + ppnOngkir));
+      
+      const ppnReseller = baseReseller * 0.11;
+      setValue("hargaProdukReseller", String(baseReseller));
+      setValue("ppn11Reseller", String(ppnReseller));
+      setValue("ongkirReseller", String(ongkir));
+      setValue("hargaPPN11OngkirReseller", String(ppnOngkir));
+      setValue("totalHargaOngkirReseller", String(baseReseller + ongkir));
+      setValue("totalHargaReseller", String(baseReseller + ppnReseller + ongkir + ppnOngkir));
+    }
+  }, [watchTipeTimbangan, watchOngkirKUT, watchQuantity, isTimbangan, setValue]);
+
   return (
-    <Card className="overflow-hidden shadow-sm">
-              <CardHeader className="bg-[#eef5f5] px-6 py-3 border-b flex flex-row items-center gap-2 space-y-0 text-teal-800 font-semibold">
-                <span className="w-5 h-5 rounded-full border-2 border-current flex items-center justify-center text-xs">i</span>
-                <CardTitle className="text-base font-semibold">Detail {watchKategori}</CardTitle>
-              </CardHeader>
-              <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-[#eef5f5] px-6 py-3 border-b border-gray-200 flex items-center gap-2 text-teal-800 font-semibold">
+        <span className="w-5 h-5 rounded-full border-2 border-current flex items-center justify-center text-xs">i</span>
+        <span className="text-base font-semibold">Detail {watchKategori}</span>
+      </div>
+      <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
 
                 
 
@@ -52,10 +95,13 @@ export default function FormDetailKategori({ wilayahList = [], ekspedisiList = [
                       <label className="text-sm font-medium text-gray-700">Tipe Timbangan Produk <span className="text-red-500">*</span></label>
                       <select {...register("tipeTimbangan")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
                         <option value="">Pilih Tipe</option>
-                        <option value="1 Kg">1 Kg</option>
-                        <option value="3 Kg">3 Kg</option>
-                        <option value="13 Kg">13 Kg</option>
-                        <option value="31 Kg">31 Kg</option>
+                        <option value="Sonic Opsi A">Sonic Opsi A</option>
+                        <option value="Sonic Opsi B">Sonic Opsi B</option>
+                        <option value="Sonic Opsi C">Sonic Opsi C</option>
+                        <option value="Sonic Opsi D">Sonic Opsi D</option>
+                        <option value="Quattro Opsi A">Quattro Opsi A</option>
+                        <option value="Quattro Opsi B">Quattro Opsi B</option>
+                        <option value="Quattro Opsi C">Quattro Opsi C</option>
                       </select>
                     </div>
                     <div className="space-y-1">
@@ -73,7 +119,13 @@ export default function FormDetailKategori({ wilayahList = [], ekspedisiList = [
                     </div>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">Berat (KG) <span className="text-red-500">*</span></label>
-                      <Input type="number" {...register("berat")}  />
+                      <select {...register("berat")} className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+                        <option value="">Pilih Berat</option>
+                        <option value="1">1 KG</option>
+                        <option value="3">3 KG</option>
+                        <option value="13">13 KG</option>
+                        <option value="31">31 KG</option>
+                      </select>
                     </div>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">Ekspedisi</label>
@@ -207,7 +259,7 @@ export default function FormDetailKategori({ wilayahList = [], ekspedisiList = [
                      <Input type="text" placeholder="Masukkan Nomor" {...register("nomorFormulirBerlangganan")}  />
                    </div>
                 )}
-              </CardContent>
-            </Card>
+               </div>
+             </div>
   );
 }

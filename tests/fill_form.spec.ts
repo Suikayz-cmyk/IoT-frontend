@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 import { fakerID_ID as faker } from '@faker-js/faker';
 
 test('Auto-fill Form Pemesanan', async ({ page }) => {
@@ -24,8 +24,10 @@ test('Auto-fill Form Pemesanan', async ({ page }) => {
   await page.locator('input[name="kodePemesanan"]').fill(faker.string.alphanumeric(8).toUpperCase());
 
   // Pilih Instansi (akan otomatis mengisi PIC, NIK, dll)
-  const instansiSelect = page.locator('select[name="instansi"]');
-  await instansiSelect.selectOption({ index: 1 });
+  const instansiInput = page.locator('label').filter({ hasText: /^Nama Instansi Pemesan/ }).locator('..').locator('input[type="text"]');
+  await instansiInput.click();
+  await page.waitForTimeout(500);
+  await page.locator('.absolute.top-full .cursor-pointer').first().click();
   await page.waitForTimeout(1000); // Tunggu autofill PIC berjalan
 
   await page.locator('input[name="nomorBAST"]').fill(faker.string.alphanumeric(10).toUpperCase());
@@ -48,7 +50,7 @@ test('Auto-fill Form Pemesanan', async ({ page }) => {
   await page.locator('select[name="ekspedisi"]').selectOption({ index: 1 });
 
   await page.locator('input[name="nomorResi"]').fill(faker.string.alphanumeric(15).toUpperCase());
-  await page.locator('input[name="berat"]').fill(faker.number.int({ min: 1, max: 50 }).toString());
+  await page.locator('select[name="berat"]').selectOption('1');
   
   await page.waitForTimeout(5000);
 });

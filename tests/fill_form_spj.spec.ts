@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 import { fakerID_ID as faker } from '@faker-js/faker';
 
 test('Auto-fill Form SPJ', async ({ page }) => {
@@ -17,9 +17,11 @@ test('Auto-fill Form SPJ', async ({ page }) => {
   await page.goto('/spj/add');
   await page.waitForTimeout(2000); 
 
-  // Pilih Instansi (akan otomatis mengisi PIC, Alamat, dll)
-  const instansiSelect = page.locator('label').filter({ hasText: /^Nama Instansi Pemesan/ }).locator('..').locator('select');
-  await instansiSelect.selectOption({ index: 1 });
+  // Pilih Instansi (menggunakan Combobox Shadcn)
+  const instansiInput = page.locator('label').filter({ hasText: /^Nama Instansi Pemesan/ }).locator('..').locator('input[type="text"]');
+  await instansiInput.click();
+  await page.waitForTimeout(500);
+  await page.locator('.absolute.top-full .cursor-pointer').first().click(); // Pilih instansi pertama
   await page.waitForTimeout(1000); // Tunggu autofill berjalan
 
   const fakeDate = faker.date.recent().toISOString().split('T')[0];
@@ -32,7 +34,7 @@ test('Auto-fill Form SPJ', async ({ page }) => {
   await page.locator('label').filter({ hasText: /^Tanggal Paraf/ }).locator('..').locator('input').fill(fakeDate);
 
   // Kebutuhan SPJ
-  await page.locator('label').filter({ hasText: /^Kebutuhan SPJ/ }).locator('..').locator('textarea').fill(faker.lorem.sentence());
+  await page.locator('label').filter({ hasText: /^Kebutuhan SPJ/ }).locator('..').locator('input').fill(faker.lorem.sentence());
 
   // Dropdowns
   await page.locator('label').filter({ hasText: /^Jumlah Rangkap/ }).locator('..').locator('select').selectOption('2');

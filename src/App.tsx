@@ -34,6 +34,9 @@ export default function App() {
           <Route path="/master-data" element={<MasterData />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Route>
+        
+        {/* 404 Fallback Route */}
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
       <Toaster position="top-center" richColors />
     </BrowserRouter>

@@ -4,7 +4,7 @@ import App from './App.tsx'
 import './index.css'
 import axios from 'axios'
 
-axios.defaults.baseURL = 'http://localhost:8080'
+axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'

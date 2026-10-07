@@ -66,10 +66,19 @@ export const spjApi = {
   create: async (payload: any): Promise<any> => {
     const headers = getAuthHeaders();
     
+    const parsedInstansiId = (payload.namaInstansi && !isNaN(Number(payload.namaInstansi))) ? Number(payload.namaInstansi) : 0;
+    const parsedPicId = (payload.namaPIC && !isNaN(Number(payload.namaPIC))) ? Number(payload.namaPIC) : 0;
+
     const spjPayload = {
       kode_order: `SPJ-${Date.now()}`,
-      instansi_id: payload.namaInstansi ? Number(payload.namaInstansi) : null,
-      pic_id: payload.namaPIC ? Number(payload.namaPIC) : null,
+      instansi_id: parsedInstansiId,
+      instansi: parsedInstansiId === 0 && payload.namaInstansi ? {
+        nama_instansi: payload.namaInstansi,
+      } : undefined,
+      pic_id: parsedPicId,
+      pic: parsedPicId === 0 && payload.namaPIC ? {
+        nama_pic: payload.namaPIC,
+      } : undefined,
       status: payload.statusPesanan || 'diproses',
       kebutuhan_spj: payload.kebutuhanSPJ || '',
       jumlah_rangkap: payload.jumlahRangkap ? Number(payload.jumlahRangkap) : 1,
@@ -93,10 +102,20 @@ export const spjApi = {
     const spjData = spjRes.data.data;
     if (!spjData) throw new Error("SPJ not found");
 
+    const parsedInstansiId = payload.namaInstansi !== undefined 
+      ? ((payload.namaInstansi && !isNaN(Number(payload.namaInstansi))) ? Number(payload.namaInstansi) : 0) 
+      : spjData.instansi_id;
+
+    const parsedPicId = payload.namaPIC !== undefined
+      ? ((payload.namaPIC && !isNaN(Number(payload.namaPIC))) ? Number(payload.namaPIC) : 0)
+      : spjData.pic_id;
+
     const spjUpdateData = {
       ...spjData,
-      instansi_id: payload.namaInstansi !== undefined ? (payload.namaInstansi ? Number(payload.namaInstansi) : null) : spjData.instansi_id,
-      pic_id: payload.namaPIC !== undefined ? (payload.namaPIC ? Number(payload.namaPIC) : null) : spjData.pic_id,
+      instansi_id: parsedInstansiId,
+      instansi: parsedInstansiId === 0 && payload.namaInstansi ? { nama_instansi: payload.namaInstansi } : undefined,
+      pic_id: parsedPicId,
+      pic: parsedPicId === 0 && payload.namaPIC ? { nama_pic: payload.namaPIC } : undefined,
       status: payload.statusPesanan !== undefined ? payload.statusPesanan : spjData.status,
       kebutuhan_spj: payload.kebutuhanSPJ !== undefined ? payload.kebutuhanSPJ : spjData.kebutuhan_spj,
       jumlah_rangkap: payload.jumlahRangkap ? Number(payload.jumlahRangkap) : spjData.jumlah_rangkap,

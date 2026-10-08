@@ -51,7 +51,7 @@ export default function ResetPasswordForm({ setView, resetToken, setResetToken }
             <input 
               id="newPassword" 
               type={showPassword ? "text" : "password"} 
-              className="w-full bg-[#949cff] text-[#115e59] placeholder:text-[#0f766e]/70 border-none rounded-md px-4 py-3.5 pr-12 focus:outline-none focus:ring-2 focus:ring-[#0f766e] font-medium"
+              className="w-full bg-[#949cff] text-primary-hover placeholder:text-primary/70 border-none rounded-md px-4 py-3.5 pr-12 focus:outline-none focus:ring-2 focus:ring-primary font-medium"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               placeholder="Enter new password"
@@ -70,12 +70,12 @@ export default function ResetPasswordForm({ setView, resetToken, setResetToken }
         <button 
           type="submit" 
           disabled={resetMutation.isPending}
-          className="w-full bg-[#0f766e] hover:bg-[#115e59] disabled:bg-[#0f766e]/70 disabled:cursor-not-allowed text-white font-semibold py-3.5 rounded-md transition-colors mt-2"
+          className="w-full bg-primary hover:bg-primary-hover disabled:bg-primary/70 disabled:cursor-not-allowed text-white font-semibold py-3.5 rounded-md transition-colors mt-2"
         >
           {resetMutation.isPending ? 'Resetting...' : 'Reset Password'}
         </button>
         <div className="text-center mt-4">
-          <button type="button" onClick={() => { setView('login'); setResetToken(''); setNewPassword(''); }} className="text-[#0f766e] font-bold hover:underline">
+          <button type="button" onClick={() => { setView('login'); setResetToken(''); setNewPassword(''); }} className="text-primary font-bold hover:underline">
             Cancel
           </button>
         </div>

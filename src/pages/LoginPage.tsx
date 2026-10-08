@@ -28,7 +28,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex bg-white text-black font-sans relative zoom-[0.75]">
       
       <header className="absolute top-0 left-0 right-0 flex justify-between items-center px-8 lg:px-16 py-8 z-10 w-full">
-        <div className="text-3xl lg:text-4xl text-[#0f766e] font-bold">IOT Logger</div>
+        <div className="text-3xl lg:text-4xl text-primary font-bold">IOT Logger</div>
       </header>
 
       <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 lg:px-24 pt-40 pb-12 mt-8 lg:mt-0 relative z-0">

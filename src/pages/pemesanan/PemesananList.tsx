@@ -1,84 +1,19 @@
-﻿import { Input } from '@/components/ui/input';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
+import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { DeleteButton } from '@/components/common/DeleteButton';
+import { StatusSelect } from '@/components/common/StatusSelect';
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import DashboardLayout from '@/components/layout/DashboardLayout'
-import { Plus, Search, Eye, ChevronDown } from 'lucide-react'
+import { Plus, Search, Eye} from 'lucide-react'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { pemesananApi } from '@/api/pemesanan'
 import { formatDate } from '@/utils/formatters'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Pagination } from '@/components/common/Pagination';
 import { toast } from "sonner";
 
 
-
-const DeleteButton = ({ onConfirm, isPending }: { onConfirm: () => void, isPending: boolean }) => (
-  <AlertDialog>
-    <AlertDialogTrigger asChild>
-      <Button variant="outline" disabled={isPending} className="text-red-600 hover:bg-red-50 p-1.5 rounded transition-colors disabled:opacity-50" title="Hapus Data">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
-      </Button>
-    </AlertDialogTrigger>
-    <AlertDialogContent>
-      <AlertDialogHeader>
-        <AlertDialogTitle>Konfirmasi Hapus</AlertDialogTitle>
-        <AlertDialogDescription>Yakin ingin menghapus pesanan ini beserta semua data terkait?</AlertDialogDescription>
-      </AlertDialogHeader>
-      <AlertDialogFooter>
-        <AlertDialogCancel>Batal</AlertDialogCancel>
-        <AlertDialogAction onClick={onConfirm} className="bg-red-600 hover:bg-red-700">Hapus</AlertDialogAction>
-      </AlertDialogFooter>
-    </AlertDialogContent>
-  </AlertDialog>
-)
-
-const StatusSelect = ({ currentStatus, onStatusChange, getStatusStyles, options, title }: { currentStatus: string, onStatusChange: (v: string) => void, getStatusStyles: (s: string) => string, options: React.ReactNode, title?: string }) => {
-  const [pendingStatus, setPendingStatus] = useState<string | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
-
-  const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setPendingStatus(e.target.value);
-    setIsOpen(true);
-  };
-
-  const confirmChange = () => {
-    if (pendingStatus) onStatusChange(pendingStatus);
-    setIsOpen(false);
-  };
-
-  const cancelChange = () => {
-    setPendingStatus(null);
-    setIsOpen(false);
-  };
-
-  return (
-    <>
-      <div className="relative inline-flex items-center">
-        <select 
-          value={currentStatus} 
-          onChange={handleSelect}
-          className={`cursor-pointer appearance-none focus:outline-none capitalize pl-2.5 pr-7 py-1 text-xs font-semibold rounded-full transition-colors ${getStatusStyles(currentStatus)}`}
-        >
-          {options}
-        </select>
-        <ChevronDown className="absolute right-2 w-3.5 h-3.5 pointer-events-none opacity-60" />
-      </div>
-      <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Konfirmasi Ubah {title || 'Status'}</AlertDialogTitle>
-            <AlertDialogDescription>Yakin ingin mengubah status menjadi '{pendingStatus}'?</AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={cancelChange}>Batal</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmChange}>Ya, Ubah</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
-  );
-}
 
 export default function PemesananList() {
   const navigate = useNavigate()
@@ -139,20 +74,6 @@ export default function PemesananList() {
   const paginatedData = filteredData.slice(startIndex, startIndex + itemsPerPage)
 
 
-  const getStatusStyles = (status: string | undefined | null) => {
-    if (!status) return 'bg-slate-100 text-slate-700 border-slate-200';
-    const s = status.toLowerCase();
-    if (s === 'baru') return 'bg-sky-50 text-sky-700 border border-sky-200';
-    if (s === 'pending') return 'bg-amber-50 text-amber-700 border border-amber-200';
-    if (s === 'diproses' || s === 'proses') return 'bg-orange-50 text-orange-700 border border-orange-200';
-    if (s === 'dikirim') return 'bg-blue-50 text-blue-700 border border-blue-200';
-    if (s === 'selesai') return 'bg-emerald-50 text-emerald-800 border border-emerald-200';
-    if (s === 'batal') return 'bg-rose-50 text-rose-700 border border-rose-200';
-    if (s === 'confirmed') return 'bg-violet-50 text-violet-700 border border-violet-200';
-    if (s === 'draft') return 'bg-slate-100 text-slate-700 border border-slate-200';
-    return 'bg-slate-100 text-slate-700 border border-slate-200';
-  };
-
   return (
     <DashboardLayout 
       title="Data Pemesanan" 
@@ -173,7 +94,7 @@ export default function PemesananList() {
           </div>
           
           <Button variant="outline" onClick={() => navigate('/pemesanan/add')}
-            className="flex items-center gap-2 bg-[#0f766e] hover:bg-[#115e59] text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm shrink-0"
+            className="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm shrink-0"
           >
             <Plus size={20} />
             <span>Tambah Data</span>
@@ -219,7 +140,6 @@ export default function PemesananList() {
                       <StatusSelect 
                         currentStatus={(item.statusPesanan || '').toLowerCase()} 
                         onStatusChange={(newStatus) => updateStatusMut.mutate({ id: item.id as string, field: 'status', value: newStatus })}
-                        getStatusStyles={getStatusStyles}
                         title="Status Pesanan"
                         options={
                           <>
@@ -238,7 +158,6 @@ export default function PemesananList() {
                       <StatusSelect 
                         currentStatus={(item.statusOdoo || '').toLowerCase()} 
                         onStatusChange={(newStatus) => updateStatusMut.mutate({ id: item.id as string, field: 'status_odoo', value: newStatus })}
-                        getStatusStyles={getStatusStyles}
                         title="Status Odoo"
                         options={
                           <>
@@ -275,77 +194,17 @@ export default function PemesananList() {
         
 
         
-        {/* Pagination Controls */}
+                {/* Pagination Controls */}
         {totalPages > 0 && (
-          <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
-            <div className="flex flex-1 justify-between sm:hidden">
-              <Button variant="outline" onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-                className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-              >
-                Previous
-              </Button>
-              <Button variant="outline" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                disabled={currentPage === totalPages}
-                className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-              >
-                Next
-              </Button>
-            </div>
-            <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-              <div>
-                <p className="text-sm text-gray-700">
-                  Menampilkan <span className="font-medium">{startIndex + 1}</span> hingga <span className="font-medium">{Math.min(startIndex + itemsPerPage, filteredData.length)}</span> dari <span className="font-medium">{filteredData.length}</span> hasil
-                </p>
-              </div>
-              <div>
-                <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
-                  <Button variant="outline" onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                    disabled={currentPage === 1}
-                    className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
-                  >
-                    <span className="sr-only">Previous</span>
-                    <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                      <path fillRule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clipRule="evenodd" />
-                    </svg>
-                  </Button>
-                  
-                  {/* Page Numbers */}
-                  {[...Array(totalPages)].map((_, idx) => {
-                    const page = idx + 1;
-                    // Tampilkan maksimal 5 halaman di sekitar current page
-                    if (page === 1 || page === totalPages || (page >= currentPage - 1 && page <= currentPage + 1)) {
-                      return (
-                        <Button variant="outline" key={page}
-                          onClick={() => setCurrentPage(page)}
-                          className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${currentPage === page ? 'z-10 bg-teal-600 text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600' : 'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0'}`}
-                        >
-                          {page}
-                        </Button>
-                      );
-                    } else if (page === currentPage - 2 || page === currentPage + 2) {
-                      return <span key={page} className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300">...</span>;
-                    }
-                    return null;
-                  })}
-
-                  <Button variant="outline" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                    disabled={currentPage === totalPages}
-                    className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
-                  >
-                    <span className="sr-only">Next</span>
-                    <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                      <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
-                    </svg>
-                  </Button>
-                </nav>
-              </div>
-            </div>
-          </div>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={filteredData.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+          />
         )}
       </div>
     </DashboardLayout>
-
   )
 }
-

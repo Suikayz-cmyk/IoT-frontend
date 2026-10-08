@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { EyeOffIcon, EyeIcon } from 'lucide-react'
 import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
+import apiClient from '../../api/client'
 import { toast } from "sonner";
 
 interface RegisterFormProps {
@@ -16,7 +17,7 @@ export default function RegisterForm({ setView }: RegisterFormProps) {
 
   const registerMutation = useMutation({
     mutationFn: async () => {
-      const response = await axios.post('/api/register', {
+      const response = await apiClient.post('/api/register', {
         name,
         email,
         password
@@ -56,7 +57,7 @@ export default function RegisterForm({ setView }: RegisterFormProps) {
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full bg-[#f4f5f9] rounded-md px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-[#0f766e]/50 text-gray-800 font-medium"
+            className="w-full bg-[#f4f5f9] rounded-md px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-primary/50 text-gray-800 font-medium"
             placeholder="Masukkan nama Anda"
           />
         </div>
@@ -71,7 +72,7 @@ export default function RegisterForm({ setView }: RegisterFormProps) {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full bg-[#f4f5f9] rounded-md px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-[#0f766e]/50 text-gray-800 font-medium"
+            className="w-full bg-[#f4f5f9] rounded-md px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-primary/50 text-gray-800 font-medium"
             placeholder="name@company.com"
           />
         </div>
@@ -87,7 +88,7 @@ export default function RegisterForm({ setView }: RegisterFormProps) {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-[#f4f5f9] rounded-md px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-[#0f766e]/50 text-gray-800 font-medium"
+              className="w-full bg-[#f4f5f9] rounded-md px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-primary/50 text-gray-800 font-medium"
               placeholder="••••••••"
             />
             <button 
@@ -111,7 +112,7 @@ export default function RegisterForm({ setView }: RegisterFormProps) {
         <button 
           type="submit" 
           disabled={registerMutation.isPending}
-          className="w-full bg-[#0f766e] hover:bg-[#115e59] disabled:bg-[#0f766e]/70 disabled:cursor-not-allowed text-white font-semibold py-3.5 rounded-md transition-colors mt-2"
+          className="w-full bg-primary hover:bg-primary-hover disabled:bg-primary/70 disabled:cursor-not-allowed text-white font-semibold py-3.5 rounded-md transition-colors mt-2"
         >
           {registerMutation.isPending ? 'Mendaftar...' : 'Daftar Sekarang'}
         </button>
@@ -119,7 +120,7 @@ export default function RegisterForm({ setView }: RegisterFormProps) {
 
       <p className="text-center text-sm font-medium mt-8 text-black">
         Sudah punya akun?{' '}
-        <button type="button" onClick={() => setView('login')} className="text-[#0f766e] font-semibold hover:underline">
+        <button type="button" onClick={() => setView('login')} className="text-primary font-semibold hover:underline">
           Login
         </button>
       </p>

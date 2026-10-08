@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { EyeOffIcon, EyeIcon } from 'lucide-react'
 import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
+import apiClient from '../../api/client'
 import { toast } from "sonner";
 import { useNavigate } from 'react-router-dom'
 
@@ -17,7 +18,7 @@ export default function LoginForm({ setView }: LoginFormProps) {
 
   const loginMutation = useMutation({
     mutationFn: async () => {
-      const response = await axios.post('/api/login', {
+      const response = await apiClient.post('/api/login', {
         email: email,
         password: password
       })
@@ -68,7 +69,7 @@ export default function LoginForm({ setView }: LoginFormProps) {
           <input 
             id="email" 
             type="email" 
-            className="w-full bg-[#949cff] text-[#115e59] placeholder:text-[#0f766e]/70 border-none rounded-md px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-[#0f766e] font-medium"
+            className="w-full bg-[#949cff] text-primary-hover placeholder:text-primary/70 border-none rounded-md px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-primary font-medium"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Enter your email id"
@@ -84,7 +85,7 @@ export default function LoginForm({ setView }: LoginFormProps) {
             <input 
               id="password" 
               type={showPassword ? "text" : "password"} 
-              className="w-full bg-[#949cff] text-[#115e59] placeholder:text-[#0f766e]/70 border-none rounded-md px-4 py-3.5 pr-12 focus:outline-none focus:ring-2 focus:ring-[#0f766e] font-medium"
+              className="w-full bg-[#949cff] text-primary-hover placeholder:text-primary/70 border-none rounded-md px-4 py-3.5 pr-12 focus:outline-none focus:ring-2 focus:ring-primary font-medium"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
@@ -102,13 +103,13 @@ export default function LoginForm({ setView }: LoginFormProps) {
 
         <div className="flex items-center justify-between text-sm pt-1">
           <label className="flex items-center gap-2 cursor-pointer group">
-            <input type="checkbox" className="rounded text-[#0f766e] focus:ring-[#0f766e] border-gray-400 w-4 h-4 cursor-pointer" />
+            <input type="checkbox" className="rounded text-primary focus:ring-primary border-gray-400 w-4 h-4 cursor-pointer" />
             <span className="font-bold text-black group-hover:text-gray-800">Remember Me</span>
           </label>
           <button 
             type="button" 
             onClick={() => setView('forgot')}
-            className="text-[#0f766e] font-bold hover:underline"
+            className="text-primary font-bold hover:underline"
           >
             Forgot Password?
           </button>
@@ -125,7 +126,7 @@ export default function LoginForm({ setView }: LoginFormProps) {
         <button 
           type="submit" 
           disabled={loginMutation.isPending}
-          className="w-full bg-[#0f766e] hover:bg-[#115e59] disabled:bg-[#0f766e]/70 disabled:cursor-not-allowed text-white font-semibold py-3.5 rounded-md transition-colors mt-2"
+          className="w-full bg-primary hover:bg-primary-hover disabled:bg-primary/70 disabled:cursor-not-allowed text-white font-semibold py-3.5 rounded-md transition-colors mt-2"
         >
           {loginMutation.isPending ? 'Logging in...' : 'Login'}
         </button>
@@ -133,7 +134,7 @@ export default function LoginForm({ setView }: LoginFormProps) {
 
       <p className="text-center text-sm font-medium mt-8 text-black">
         Belum punya akun?{' '}
-        <button type="button" onClick={() => setView('register')} className="text-[#0f766e] font-semibold hover:underline">
+        <button type="button" onClick={() => setView('register')} className="text-primary font-semibold hover:underline">
           Daftar Sekarang
         </button>
       </p>

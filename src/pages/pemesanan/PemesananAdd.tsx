@@ -12,6 +12,7 @@ import type { PemesananData, KategoriPemesanan } from '@/api/pemesanan'
 import { masterApi } from '@/api/masterApi'
 import { ChevronLeft } from 'lucide-react'
 import { formSchema, type FormValues } from './types'
+import { KATEGORI_OPTIONS } from '@/constants/options'
 
 import FormPemesan from './components/FormPemesan'
 import FormDetailKategori from './components/FormDetailKategori'
@@ -126,7 +127,7 @@ export default function PemesananAdd() {
       
       <div className="mb-6 flex items-center gap-4 sticky top-0 bg-[#f8f9fa] z-10 pt-4 pb-4 border-b border-gray-100">
         <Button variant="outline" onClick={() => navigate('/pemesanan')}
-          className="p-2 bg-white !rounded-full border border-gray-200 hover:bg-gray-50 text-gray-600 transition-colors inline-flex shadow-sm"
+          className="p-2 bg-white rounded-full border border-gray-200 hover:bg-gray-50 text-gray-600 transition-colors inline-flex shadow-sm"
           title="Kembali"
         >
           <ChevronLeft size={20} />
@@ -152,12 +153,9 @@ export default function PemesananAdd() {
                 required
               >
                 <option value="" disabled>Pilih Kategori</option>
-                <option value="IoT Inaproc">IoT Inaproc</option>
-                <option value="IoT Manual">IoT Manual</option>
-                <option value="Timbangan Inaproc">Timbangan Inaproc</option>
-                <option value="Timbangan Manual">Timbangan Manual</option>
-                <option value="RCW-360 PRO HYBRID (GSM+WIFI)">RCW-360 PRO HYBRID (GSM+WIFI)</option>
-                <option value="RCW-800W (LITE)">RCW-800W (LITE)</option>
+                {KATEGORI_OPTIONS.map((opt) => (
+                  <option key={opt} value={opt}>{opt}</option>
+                ))}
               </select>
             </div>
             <div className="space-y-1.5">

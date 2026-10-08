@@ -11,7 +11,7 @@ const CustomDatePicker = forwardRef<HTMLInputElement, CustomDatePickerProps>(
         onChange={onChange}
         required={required}
         ref={ref}
-        className={`w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#0f766e] transition-all ${className || ''}`}
+        className={`w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary transition-all ${className || ''}`}
         {...props}
       />
     )

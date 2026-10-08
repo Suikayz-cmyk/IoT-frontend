@@ -1,18 +1,42 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import axios from 'axios'
+import apiClient from './client'
+import type { SPJ, Order } from "@/types/backend";
 
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('token')
-  return token ? { Authorization: `Bearer ${token}` } : {}
+export interface SPJData {
+  id?: string;
+  kodePemesanan?: string;
+  kategori?: string;
+  instansiId?: string;
+  picId?: string;
+  namaInstansi?: string;
+  namaPIC?: string;
+  noTelpPIC?: string;
+  alamat?: string;
+  kota?: string;
+  provinsi?: string;
+  kebutuhanSPJ?: string;
+  tglPrint?: string;
+  picPrint?: string;
+  tglPengiriman?: string;
+  statusPesanan?: string;
+  tanggalOrder?: string;
+  jumlahRangkap?: string;
+  jenisKertas?: string;
+  jenisFile?: string;
+  tglUpdateList?: string;
+  tglTandaTangan?: string;
+  tglSign?: string;
+  tglParaf?: string;
+  spj_id?: number | string;
 }
 
+
+
 export const spjApi = {
-  findAll: async (): Promise<any[]> => {
-    const headers = getAuthHeaders();
-    const spjRes = await axios.get('/api/spj', { headers });
+  findAll: async (): Promise<SPJData[]> => {
+    const spjRes = await apiClient.get('/api/spj');
     const spjs = spjRes.data.data || [];
 
-    return spjs.map((spj: any) => ({
+    return spjs.map((spj: Order & SPJ & Record<string, unknown>) => ({
       id: String(spj.id),
       kodePemesanan: spj.kode_order || `SPJ-${spj.id}`,
       kategori: 'SPJ',
@@ -29,9 +53,8 @@ export const spjApi = {
     }));
   },
 
-  findById: async (id: string): Promise<any> => {
-    const headers = getAuthHeaders();
-    const spjRes = await axios.get(`/api/spj/${id}`, { headers });
+  findById: async (id: string): Promise<SPJData> => {
+    const spjRes = await apiClient.get(`/api/spj/${id}`);
     const spj = spjRes.data.data;
     if (!spj) throw new Error("SPJ not found");
 
@@ -63,8 +86,7 @@ export const spjApi = {
     }
   },
 
-  create: async (payload: any): Promise<any> => {
-    const headers = getAuthHeaders();
+  create: async (payload: Partial<SPJData>): Promise<SPJData> => {
     
     const parsedInstansiId = (payload.namaInstansi && !isNaN(Number(payload.namaInstansi))) ? Number(payload.namaInstansi) : 0;
     const parsedPicId = (payload.namaPIC && !isNaN(Number(payload.namaPIC))) ? Number(payload.namaPIC) : 0;
@@ -92,13 +114,12 @@ export const spjApi = {
       pic_print: payload.picPrint || '',
     };
 
-    const spjRes = await axios.post('/api/spj', spjPayload, { headers });
+    const spjRes = await apiClient.post('/api/spj', spjPayload);
     return spjRes.data;
   },
 
-  update: async (id: string, payload: any): Promise<any> => {
-    const headers = getAuthHeaders();
-    const spjRes = await axios.get(`/api/spj/${id}`, { headers });
+  update: async (id: string, payload: Partial<SPJData>): Promise<SPJData> => {
+    const spjRes = await apiClient.get(`/api/spj/${id}`);
     const spjData = spjRes.data.data;
     if (!spjData) throw new Error("SPJ not found");
 
@@ -129,28 +150,27 @@ export const spjApi = {
       pic_print: payload.picPrint !== undefined ? payload.picPrint : spjData.pic_print,
     };
 
-    await axios.put(`/api/spj/${id}`, spjUpdateData, { headers });
-    return { id, ...payload } as any;
+    await apiClient.put(`/api/spj/${id}`, spjUpdateData);
+    return { id, ...payload } as SPJData;
   },
 
-  updateStatus: async (id: string, status: string): Promise<any> => {
-    const headers = getAuthHeaders();
-    const spjRes = await axios.get(`/api/spj/${id}`, { headers });
+  updateStatus: async (id: string, status: string): Promise<SPJData> => {
+    const spjRes = await apiClient.get(`/api/spj/${id}`);
     const spjData = spjRes.data.data;
     if (!spjData) throw new Error("SPJ not found");
     
     spjData.status = status;
-    await axios.put(`/api/spj/${id}`, spjData, { headers });
+    await apiClient.put(`/api/spj/${id}`, spjData);
     return { id, statusPesanan: status };
   },
 
   delete: async (id: string): Promise<void> => {
-    await axios.delete(`/api/spj/${id}`, { headers: getAuthHeaders() });
+    await apiClient.delete(`/api/spj/${id}`);
   },
 
   exportExcel: async () => {
-    const response = await axios.get('/api/spj/export', {
-      headers: getAuthHeaders(),
+    const response = await apiClient.get('/api/spj/export', {
+      
       responseType: 'blob',
     })
     return response.data
@@ -159,11 +179,8 @@ export const spjApi = {
   importExcel: async (file: File) => {
     const formData = new FormData()
     formData.append('file', file)
-    const response = await axios.post('/api/spj/import', formData, {
-      headers: {
-        ...getAuthHeaders(),
-        'Content-Type': 'multipart/form-data'
-      }
+    const response = await apiClient.post('/api/spj/import', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
     })
     return response.data
   }

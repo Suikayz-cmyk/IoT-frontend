@@ -1,5 +1,6 @@
-import { Input } from '@/components/ui/input';
+
 import { Button } from '@/components/ui/button';
+import { ReadOnlyField } from '@/components/common/ReadOnlyField';
 import { useNavigate, useParams } from 'react-router-dom'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import { ChevronLeft } from 'lucide-react'
@@ -7,13 +8,7 @@ import { formatDate } from '@/utils/formatters'
 import { useQuery } from '@tanstack/react-query'
 import { spjApi } from '@/api/spj'
 
-const ReadOnlyField = ({ label, value, helperText }: { label: string, value: string | number | undefined, helperText?: string }) => (
-  <div className="space-y-1.5">
-    <label className="text-sm font-medium text-gray-700">{label}</label>
-    <Input type="text" value={value || '-'} readOnly  />
-    {helperText && <p className="text-xs text-gray-400">{helperText}</p>}
-  </div>
-)
+
 
 export default function SPJDetail() {
   const navigate = useNavigate()

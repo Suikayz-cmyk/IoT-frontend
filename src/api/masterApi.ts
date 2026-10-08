@@ -1,4 +1,4 @@
-import axios from 'axios'
+import apiClient from './client'
 import type { BackendResponse, MasterInstansi as BInstansi, MasterPIC as BPIC, MasterWilayah as BWilayah, MasterEkspedisi as BEkspedisi, MasterProduk as BProduk } from '@/types/backend';
 
 export interface MasterInstansi {
@@ -42,18 +42,15 @@ export interface MasterWilayah {
   alamat: string;
 }
 
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('token')
-  return token ? { Authorization: `Bearer ${token}` } : {}
-}
+
 
 export const masterApi = {
   getOptions: async () => {
-    const res = await axios.get('/api/options', { headers: getAuthHeaders() });
+    const res = await apiClient.get('/api/options');
     return res.data.data || {};
   },
   getInstansi: async (): Promise<MasterInstansi[]> => {
-    const res = await axios.get<BackendResponse<BInstansi[]>>('/api/instansi', { headers: getAuthHeaders() });
+    const res = await apiClient.get<BackendResponse<BInstansi[]>>('/api/instansi');
     const data = res.data.data || [];
     return data.map((d: BInstansi) => ({
       id: String(d.id),
@@ -74,7 +71,7 @@ export const masterApi = {
       provinsi: data.provinsi,
       kota_kab: data.kotaKab
     };
-    const res = await axios.post('/api/instansi', payload, { headers: getAuthHeaders() });
+    const res = await apiClient.post('/api/instansi', payload);
     return res.data;
   },
   updateInstansi: async (data: MasterInstansi) => {
@@ -86,15 +83,15 @@ export const masterApi = {
       provinsi: data.provinsi,
       kota_kab: data.kotaKab
     };
-    const res = await axios.put(`/api/instansi/${data.id}`, payload, { headers: getAuthHeaders() });
+    const res = await apiClient.put(`/api/instansi/${data.id}`, payload);
     return res.data;
   },
   deleteInstansi: async (id: string) => {
-    await axios.delete(`/api/instansi/${id}`, { headers: getAuthHeaders() });
+    await apiClient.delete(`/api/instansi/${id}`);
   },
 
   getPIC: async (): Promise<MasterPIC[]> => {
-    const res = await axios.get<BackendResponse<BPIC[]>>('/api/pic', { headers: getAuthHeaders() });
+    const res = await apiClient.get<BackendResponse<BPIC[]>>('/api/pic');
     const data = res.data.data || [];
     return data.map((d: BPIC) => ({
       id: String(d.id),
@@ -113,7 +110,7 @@ export const masterApi = {
       email: data.email,
       no_hp: data.noTelp
     };
-    const res = await axios.post('/api/pic', payload, { headers: getAuthHeaders() });
+    const res = await apiClient.post('/api/pic', payload);
     return res.data;
   },
   updatePIC: async (data: MasterPIC) => {
@@ -124,15 +121,15 @@ export const masterApi = {
       email: data.email,
       no_hp: data.noTelp
     };
-    const res = await axios.put(`/api/pic/${data.id}`, payload, { headers: getAuthHeaders() });
+    const res = await apiClient.put(`/api/pic/${data.id}`, payload);
     return res.data;
   },
   deletePIC: async (id: string) => {
-    await axios.delete(`/api/pic/${id}`, { headers: getAuthHeaders() });
+    await apiClient.delete(`/api/pic/${id}`);
   },
 
     getProduk: async (): Promise<MasterProduk[]> => {
-    const res = await axios.get<BackendResponse<BProduk[]>>("/api/produk", { headers: getAuthHeaders() });
+    const res = await apiClient.get<BackendResponse<BProduk[]>>("/api/produk");
     const data = res.data.data || [];
     return data.map((d: BProduk) => ({
       id: String(d.id),
@@ -150,7 +147,7 @@ export const masterApi = {
       harga: Number(data.harga),
       status: 1
     };
-    const res = await axios.post("/api/produk", payload, { headers: getAuthHeaders() });
+    const res = await apiClient.post("/api/produk", payload);
     return res.data;
   },
   updateProduk: async (data: MasterProduk) => {
@@ -161,15 +158,15 @@ export const masterApi = {
       harga: Number(data.harga),
       status: 1
     };
-    const res = await axios.put(`/api/produk/${data.id}`, payload, { headers: getAuthHeaders() });
+    const res = await apiClient.put(`/api/produk/${data.id}`, payload);
     return res.data;
   },
   deleteProduk: async (id: string) => {
-    await axios.delete(`/api/produk/${id}`, { headers: getAuthHeaders() });
+    await apiClient.delete(`/api/produk/${id}`);
   },
 
   getEkspedisi: async (): Promise<MasterEkspedisi[]> => {
-    const res = await axios.get<BackendResponse<BEkspedisi[]>>('/api/ekspedisi', { headers: getAuthHeaders() });
+    const res = await apiClient.get<BackendResponse<BEkspedisi[]>>('/api/ekspedisi');
     const data = res.data.data || [];
     return data.map((d: BEkspedisi) => ({
       id: String(d.id),
@@ -181,7 +178,7 @@ export const masterApi = {
       nama_ekspedisi: data.namaEkspedisi,
       status: '1' // backend: MasterEkspedisi.Status bertipe string
     };
-    const res = await axios.post('/api/ekspedisi', payload, { headers: getAuthHeaders() });
+    const res = await apiClient.post('/api/ekspedisi', payload);
     return res.data;
   },
   updateEkspedisi: async (data: MasterEkspedisi) => {
@@ -189,15 +186,15 @@ export const masterApi = {
       nama_ekspedisi: data.namaEkspedisi,
       status: '1' // backend: MasterEkspedisi.Status bertipe string
     };
-    const res = await axios.put(`/api/ekspedisi/${data.id}`, payload, { headers: getAuthHeaders() });
+    const res = await apiClient.put(`/api/ekspedisi/${data.id}`, payload);
     return res.data;
   },
   deleteEkspedisi: async (id: string) => {
-    await axios.delete(`/api/ekspedisi/${id}`, { headers: getAuthHeaders() });
+    await apiClient.delete(`/api/ekspedisi/${id}`);
   },
 
   getWilayah: async (): Promise<MasterWilayah[]> => {
-    const res = await axios.get<BackendResponse<BWilayah[]>>('/api/wilayah', { headers: getAuthHeaders() });
+    const res = await apiClient.get<BackendResponse<BWilayah[]>>('/api/wilayah');
     const data = res.data.data || [];
     return data.map((d: BWilayah) => ({
       id: String(d.id),
@@ -214,7 +211,7 @@ export const masterApi = {
       kota_kab: data.kotaKab,
       alamat: data.alamat || ''
     };
-    const res = await axios.post('/api/wilayah', payload, { headers: getAuthHeaders() });
+    const res = await apiClient.post('/api/wilayah', payload);
     return res.data;
   },
   updateWilayah: async (data: MasterWilayah) => {
@@ -223,10 +220,10 @@ export const masterApi = {
       kota_kab: data.kotaKab,
       alamat: data.alamat || ''
     };
-    const res = await axios.put(`/api/wilayah/${data.id}`, payload, { headers: getAuthHeaders() });
+    const res = await apiClient.put(`/api/wilayah/${data.id}`, payload);
     return res.data;
   },
   deleteWilayah: async (id: string) => {
-    await axios.delete(`/api/wilayah/${id}`, { headers: getAuthHeaders() });
+    await apiClient.delete(`/api/wilayah/${id}`);
   }
 };

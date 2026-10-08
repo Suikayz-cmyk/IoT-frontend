@@ -142,7 +142,7 @@ export default function DashboardLayout({
       <main className="flex-1 px-6 pb-6 pt-0 lg:px-8 lg:pb-8 relative overflow-y-auto">
         {(title || onExport) && (
           <div className="flex justify-between items-start w-full mb-8 pt-6">
-            <h1 className="text-3xl font-normal text-[#0f766e]">{title}</h1>
+            <h1 className="text-3xl font-normal text-primary">{title}</h1>
 
             {onExport && (
               <button 

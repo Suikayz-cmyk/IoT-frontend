@@ -74,56 +74,56 @@ export default function SettingsPage() {
               onClick={() => setActiveTab('account')}
               className={`pb-3 font-medium text-sm transition-colors relative whitespace-nowrap ${
                 activeTab === 'account' 
-                  ? 'text-[#0f766e] font-semibold' 
+                  ? 'text-primary font-semibold' 
                   : 'text-gray-500 hover:text-gray-800'
               }`}
             >
               Account Setting
-              {activeTab === 'account' && <span className="absolute -bottom-px left-0 w-full h-0.75 bg-[#0f766e] rounded-t-sm"></span>}
+              {activeTab === 'account' && <span className="absolute -bottom-px left-0 w-full h-0.75 bg-primary rounded-t-sm"></span>}
             </button>
             <button 
               onClick={() => setActiveTab('security')}
               className={`pb-3 font-medium text-sm transition-colors relative whitespace-nowrap ${
                 activeTab === 'security' 
-                  ? 'text-[#0f766e] font-semibold' 
+                  ? 'text-primary font-semibold' 
                   : 'text-gray-500 hover:text-gray-800'
               }`}
             >
               Login & Security
-              {activeTab === 'security' && <span className="absolute -bottom-px left-0 w-full h-0.75 bg-[#0f766e] rounded-t-sm"></span>}
+              {activeTab === 'security' && <span className="absolute -bottom-px left-0 w-full h-0.75 bg-primary rounded-t-sm"></span>}
             </button>
             <button 
               onClick={() => setActiveTab('users')}
               className={`pb-3 font-medium text-sm transition-colors relative whitespace-nowrap ${
                 activeTab === 'users' 
-                  ? 'text-[#0f766e] font-semibold' 
+                  ? 'text-primary font-semibold' 
                   : 'text-gray-500 hover:text-gray-800'
               }`}
             >
               User Management
-              {activeTab === 'users' && <span className="absolute -bottom-px left-0 w-full h-0.75 bg-[#0f766e] rounded-t-sm"></span>}
+              {activeTab === 'users' && <span className="absolute -bottom-px left-0 w-full h-0.75 bg-primary rounded-t-sm"></span>}
             </button>
             <button 
               onClick={() => setActiveTab('app')}
               className={`pb-3 font-medium text-sm transition-colors relative whitespace-nowrap ${
                 activeTab === 'app' 
-                  ? 'text-[#0f766e] font-semibold' 
+                  ? 'text-primary font-semibold' 
                   : 'text-gray-500 hover:text-gray-800'
               }`}
             >
               App Config
-              {activeTab === 'app' && <span className="absolute -bottom-px left-0 w-full h-0.75 bg-[#0f766e] rounded-t-sm"></span>}
+              {activeTab === 'app' && <span className="absolute -bottom-px left-0 w-full h-0.75 bg-primary rounded-t-sm"></span>}
             </button>
             <button 
               onClick={() => setActiveTab('db')}
               className={`pb-3 font-medium text-sm transition-colors relative whitespace-nowrap ${
                 activeTab === 'db' 
-                  ? 'text-[#0f766e] font-semibold' 
+                  ? 'text-primary font-semibold' 
                   : 'text-gray-500 hover:text-gray-800'
               }`}
             >
               Database
-              {activeTab === 'db' && <span className="absolute -bottom-px left-0 w-full h-0.75 bg-[#0f766e] rounded-t-sm"></span>}
+              {activeTab === 'db' && <span className="absolute -bottom-px left-0 w-full h-0.75 bg-primary rounded-t-sm"></span>}
             </button>
           </div>
 

@@ -1,10 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface BaseBackendModel {
+  [key: string]: any;
   id: number;
   created_at?: string;
   updated_at?: string;
 }
 
 export interface MasterInstansi extends BaseBackendModel {
+  [key: string]: any;
   nama_instansi: string;
   nik?: string;
   npwp?: string;
@@ -14,6 +17,7 @@ export interface MasterInstansi extends BaseBackendModel {
 }
 
 export interface MasterPIC extends BaseBackendModel {
+  [key: string]: any;
   instansi_id: number;
   nama_pic: string;
   nik?: string;
@@ -22,6 +26,7 @@ export interface MasterPIC extends BaseBackendModel {
 }
 
 export interface MasterProduk extends BaseBackendModel {
+  [key: string]: any;
   kode_produk: string;
   nama_produk: string;
   jenis_produk: string;
@@ -30,17 +35,20 @@ export interface MasterProduk extends BaseBackendModel {
 }
 
 export interface MasterWilayah extends BaseBackendModel {
+  [key: string]: any;
   provinsi: string;
   kota_kab: string;
   alamat?: string;
 }
 
 export interface MasterEkspedisi extends BaseBackendModel {
+  [key: string]: any;
   nama_ekspedisi: string;
   status: number;
 }
 
 export interface OrderItem extends BaseBackendModel {
+  [key: string]: any;
   order_id: number;
   produk_id: number;
   qty: number;
@@ -50,6 +58,7 @@ export interface OrderItem extends BaseBackendModel {
 }
 
 export interface OrderInaproc extends BaseBackendModel {
+  [key: string]: any;
   order_id: number;
   no_po?: string;
   tanggal_po?: string;
@@ -66,6 +75,7 @@ export interface OrderInaproc extends BaseBackendModel {
 }
 
 export interface OrderManual extends BaseBackendModel {
+  [key: string]: any;
   order_id: number;
   nama_surat?: string;
   dokumen_full_sign?: string;
@@ -79,6 +89,7 @@ export interface OrderManual extends BaseBackendModel {
 }
 
 export interface OrderProcurement extends BaseBackendModel {
+  [key: string]: any;
   order_id: number;
   no_po_kut?: string;
   tanggal_invoice_kut?: string;
@@ -88,6 +99,7 @@ export interface OrderProcurement extends BaseBackendModel {
 }
 
 export interface Payment extends BaseBackendModel {
+  [key: string]: any;
   order_id: number;
   tanggal_uang_masuk?: string;
   jumlah_uang_masuk?: number;
@@ -97,6 +109,7 @@ export interface Payment extends BaseBackendModel {
 }
 
 export interface SPJ extends BaseBackendModel {
+  [key: string]: any;
   order_id: number;
   kebutuhan_spj?: string;
   jumlah_rangkap?: number;
@@ -112,6 +125,7 @@ export interface SPJ extends BaseBackendModel {
 }
 
 export interface OrderDocument extends BaseBackendModel {
+  [key: string]: any;
   order_id: number;
   spj_id?: number;
   jenis_dokumen: string;
@@ -121,15 +135,16 @@ export interface OrderDocument extends BaseBackendModel {
 }
 
 export interface Shipment extends BaseBackendModel {
+  [key: string]: any;
   order_id: number;
-  [key: string]: unknown;
-}
+  }
 
 /**
  * Representasi utama Order (Pemesanan) di Backend 3.0
  * Backend 3.0 menggunakan Preload untuk membawa semua relasi data secara langsung.
  */
 export interface Order extends BaseBackendModel {
+  [key: string]: any;
   kode_order: string;
   jenis_order: 'inaproc' | 'manual';
   kategori_order: string;

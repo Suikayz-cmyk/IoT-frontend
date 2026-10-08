@@ -1,5 +1,6 @@
-import { Input } from '@/components/ui/input';
+
 import { Button } from '@/components/ui/button';
+import { ReadOnlyField } from '@/components/common/ReadOnlyField';
 import { useParams, useNavigate } from 'react-router-dom'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import { useQuery } from '@tanstack/react-query'
@@ -7,12 +8,7 @@ import { pemesananApi } from '@/api/pemesanan'
 import { masterApi } from '@/api/masterApi'
 import { ChevronLeft, Loader2 } from 'lucide-react'
 import { formatDate } from '@/utils/formatters'
-const ReadOnlyField = ({ label, value }: { label: string, value: string | number | undefined }) => (
-  <div className="space-y-1">
-    <label className="text-sm font-medium text-gray-700">{label}</label>
-    <Input type="text" value={value || '-'} readOnly  />
-  </div>
-)
+
 
 export default function PemesananDetail() {
   const { id } = useParams<{ id: string }>()

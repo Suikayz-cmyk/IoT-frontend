@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input'
 import CustomDatePicker from '@/components/ui/CustomDatePicker'
 import { Combobox } from '@/components/ui/combobox'
 import { toast } from "sonner";
+import FormCard from '@/components/common/FormCard';
 
 export default function SPJAdd() {
   const navigate = useNavigate()
@@ -55,8 +56,8 @@ export default function SPJAdd() {
   // Edit mode pre-fill
   useEffect(() => {
     if (editData) {
-      setNamaInstansi(editData.namaInstansi)
-      setNamaPIC(editData.namaPIC)
+      setNamaInstansi(editData.namaInstansi || '')
+      setNamaPIC(editData.namaPIC || '')
       setNoTelpPIC(editData.noTelpPIC || '')
       setAlamat(editData.alamat || '')
       setKota(editData.kota || '')
@@ -133,7 +134,7 @@ export default function SPJAdd() {
     <DashboardLayout title="">
       <div className="mb-6 flex items-center gap-4 sticky top-0 bg-[#f8f9fa] z-10 pt-4 pb-4 border-b border-gray-100">
         <Button variant="outline" type="button" onClick={() => navigate('/spj')} 
-          className="p-2 bg-white !rounded-full border border-gray-200 hover:bg-gray-50 text-gray-600 transition-colors inline-flex shadow-sm"
+          className="p-2 bg-white rounded-full border border-gray-200 hover:bg-gray-50 text-gray-600 transition-colors inline-flex shadow-sm"
           title="Kembali"
         >
           <ChevronLeft size={20} />
@@ -156,12 +157,7 @@ export default function SPJAdd() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <div className="bg-[#eef5f5] px-6 py-3 border-b border-gray-200 flex items-center gap-2 text-teal-800 font-semibold">
-            <span className="w-5 h-5 rounded-full border-2 border-current flex items-center justify-center text-xs">i</span>
-            <span className="text-base font-semibold">Data Pemesan</span>
-          </div>
-          <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+        <FormCard title="Data Pemesan">
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-700">Nama Instansi Pemesan <span className="text-red-500">*</span></label>
               <Combobox 
@@ -202,15 +198,9 @@ export default function SPJAdd() {
               <Input type="text" value={provinsi} onChange={(e) => setProvinsi(e.target.value)} required />
               <p className="text-xs text-gray-500">Terisi otomatis dari hasil cek, bisa diubah</p>
             </div>
-          </div>
-        </div>
+        </FormCard>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <div className="bg-[#eef5f5] px-6 py-3 border-b border-gray-200 flex items-center gap-2 text-teal-800 font-semibold">
-            <span className="w-5 h-5 rounded-full border-2 border-current flex items-center justify-center text-xs">i</span>
-            <span className="text-base font-semibold">Detail SPJ</span>
-          </div>
-          <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+        <FormCard title="Detail SPJ">
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-700">Tanggal Print <span className="text-red-500">*</span></label>
               <CustomDatePicker value={tglPrint} onChange={(e) => setTglPrint(e.target.value)} required />
@@ -240,7 +230,7 @@ export default function SPJAdd() {
 
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-700">Jumlah Rangkap <span className="text-red-500">*</span></label>
-              <select value={jumlahRangkap} onChange={(e) => setJumlahRangkap(e.target.value)} required className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#0f766e] transition-all">
+              <select value={jumlahRangkap} onChange={(e) => setJumlahRangkap(e.target.value)} required className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary transition-all">
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
@@ -250,7 +240,7 @@ export default function SPJAdd() {
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-700">Jenis Kertas <span className="text-red-500">*</span></label>
-              <select value={jenisKertas} onChange={(e) => setJenisKertas(e.target.value)} required className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#0f766e] transition-all">
+              <select value={jenisKertas} onChange={(e) => setJenisKertas(e.target.value)} required className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary transition-all">
                 <option value="">Pilih Jenis</option>
                 <option value="A4">A4</option>
                 <option value="F4">F4</option>
@@ -259,7 +249,7 @@ export default function SPJAdd() {
 
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-700">Jenis File <span className="text-red-500">*</span></label>
-              <select value={jenisFile} onChange={(e) => setJenisFile(e.target.value)} required className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#0f766e] transition-all">
+              <select value={jenisFile} onChange={(e) => setJenisFile(e.target.value)} required className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary transition-all">
                 <option value="">Pilih Jenis</option>
                 <option value="PDF">PDF</option>
               </select>
@@ -268,9 +258,7 @@ export default function SPJAdd() {
               <label className="text-sm font-medium text-gray-700">PIC Print <span className="text-red-500">*</span></label>
               <Input type="text" value={picPrint} onChange={(e) => setPicPrint(e.target.value)} required placeholder="Masukkan Nama" />
             </div>
-
-          </div>
-        </div>
+        </FormCard>
 
         <div className="flex justify-end gap-3 pt-6 border-t border-gray-200 mt-8">
           <Button variant="outline" type="button" 

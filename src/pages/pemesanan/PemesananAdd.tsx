@@ -183,7 +183,8 @@ export default function PemesananAdd() {
                   Batal
                 </Button>
                 <Button variant="default" type="submit" 
-                  disabled={saveMutation.isPending}>
+                  disabled={saveMutation.isPending}
+                  className="px-6 py-2.5 rounded-lg">
                   {saveMutation.isPending ? 'Menyimpan...' : 'Lanjut / Simpan'}
                 </Button>
               </div>

@@ -53,9 +53,22 @@ export const spjApi = {
     }));
   },
 
-  findById: async (id: string): Promise<SPJData> => {
-    const spjRes = await apiClient.get(`/api/spj/${id}`);
-    const spj = spjRes.data.data;
+  findById: async (id: string): Promise<SPJData> => {
+    let spj = null;
+    try {
+      const spjRes = await apiClient.get(`/api/spj/${id}`);
+      spj = spjRes.data?.data;
+    } catch (e) {
+      console.warn("GET /api/spj/:id failed, falling back to findAll", e);
+    }
+
+    if (!spj) {
+      const allSpjRes = await apiClient.get('/api/spj');
+      const spjs = allSpjRes.data?.data || [];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      spj = spjs.find((s: any) => String(s.id) === id);
+    }
+
     if (!spj) throw new Error("SPJ not found");
 
     return {
@@ -83,9 +96,9 @@ export const spjApi = {
       tglParaf: spj.tanggal_paraf || '',
       picPrint: spj.pic_print || '',
       spj_id: spj.id,
-    }
+      tanggalOrder: spj.created_at || spj.tanggal_po || '',
+    };
   },
-
   create: async (payload: Partial<SPJData>): Promise<SPJData> => {
     
     const parsedInstansiId = (payload.namaInstansi && !isNaN(Number(payload.namaInstansi))) ? Number(payload.namaInstansi) : 0;

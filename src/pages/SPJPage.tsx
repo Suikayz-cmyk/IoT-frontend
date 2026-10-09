@@ -130,13 +130,13 @@ export default function SPJPage() {
                       />
                     </TableCell>
                     <TableCell className="py-2.5 px-3 text-center flex items-center justify-center gap-1">
-                      <Button variant="outline" onClick={() => navigate(`/spj/`)}
+                      <Button variant="outline" onClick={() => navigate(`/spj/${item.id}`)}
                         className="text-blue-600 hover:bg-blue-50 p-1.5 rounded transition-colors"
                         title="Lihat Detail"
                       >
                         <Eye size={18} />
                       </Button>
-                      <Button variant="outline" onClick={() => navigate(`/spj/edit/`)}
+                      <Button variant="outline" onClick={() => navigate(`/spj/edit/${item.id}`)}
                         className="text-amber-600 hover:bg-amber-50 p-1.5 rounded transition-colors"
                         title="Edit Data"
                       >
